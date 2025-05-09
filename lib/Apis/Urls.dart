@@ -1,5 +1,5 @@
-final baseUrl = 'http://192.109.209.75:3004/api';
-// final baseUrl='http://54.148.97.150:3004/api';
+// final baseUrl = 'http://192.109.209.75:3004/api';
+final baseUrl='http://54.148.97.150:3004/api';
 final loginUrl = "$baseUrl/users/findUserAndVerify";
 final setUpPassword = "$baseUrl/users/changePassword";
 final getAlertSummaryForDevice = "$baseUrl/alert/getAlertSummaryForDevice";
@@ -31,3 +31,5 @@ final getAlertHistory = "$baseUrl/alert/getAlertByAllForHistory";
 final alertDashboard = "$baseUrl/alert/getAlertByStationAssetsCount";
 final totalAlertsByStation = "$baseUrl/alert/getLocationAlertCount";
 final showAckAlert = "$baseUrl/alert/getAckAlerts";
+final assetpagessocket="http://54.148.97.150:3004/sensors";
+final dashboardpagesocket='http://192.109.209.75:3004/alerts';

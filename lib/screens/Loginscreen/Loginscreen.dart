@@ -97,12 +97,13 @@ class _LoginscreenState extends State<Loginscreen> {
               child: Center(
                 
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 400),
+                  constraints:  BoxConstraints(maxWidth: 300.w),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       SizedBox(height: 100.h),
                       CircleAvatar(
+                        backgroundColor: Colors.transparent,
                         radius: 65.r,
                         child: UiHelper.customImage(img: "trail_logo.png"),
                       ),
@@ -140,22 +141,22 @@ class _LoginscreenState extends State<Loginscreen> {
                       SizedBox(height: 20.h),
                       
                       SizedBox(
-                        width: 100.h,
-                        height: 50.h,
+                        width: 150.h,
+                        height: 55.h,
                         child: InkWell(
                           splashColor: Colors.transparent,
                           highlightColor: Colors.transparent,
                           onTap: login,
                           borderRadius: BorderRadius.circular(10.r),
                           child: Material(
-                            elevation: 4,
+                            elevation: 4.r,
                             borderRadius: BorderRadius.circular(10.r),
                             color: Appcolors.buttonColor,
                             child: Center(
                               child: UiHelper.customText(
                                 text: "Log In",
                                 color: Colors.white,
-                                fontsize: 18.sp,
+                                fontsize: 15.sp,
                                 fontWeight: FontWeight.w500,
                                 fontFamily: "bold",
                               ),
@@ -163,12 +164,12 @@ class _LoginscreenState extends State<Loginscreen> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 40.h),
+                      SizedBox(height: 130.h),
                       
                       Container(
                         margin: EdgeInsets.only(bottom: 30.h),
-                        width: 150.w,
-                        height: 40.h,
+                        width: 200.w,
+                        height: 50.h,
                         child: UiHelper.customImage(img: "Awards (1).png"),
                       ),
                     ],

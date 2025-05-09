@@ -52,7 +52,8 @@ class SplashscreenState extends State<Splashscreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 CircleAvatar(
-                  radius: 89,
+                  backgroundColor: Colors.transparent,
+                  radius: 89.r,
                   child: UiHelper.customImage(img: "trail_logo.png"),
                 ),
                 SizedBox(
@@ -61,7 +62,7 @@ class SplashscreenState extends State<Splashscreen> {
                 UiHelper.customText(
                     text: "RDPMS",
                     color: Colors.white,
-                    fontsize: 40.r,
+                    fontsize: 40.sp,
                     fontFamily: "bold",
                     fontWeight: FontWeight.bold)
               ],

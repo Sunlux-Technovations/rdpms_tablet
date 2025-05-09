@@ -38,7 +38,7 @@ class UiHelper {
       required BuildContext context}) {
     return Container(
       width: 0.8.sw,
-      height: 0.08.sh,
+      height: 0.09.sh,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20.r),
