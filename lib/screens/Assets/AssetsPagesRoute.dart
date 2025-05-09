@@ -93,14 +93,14 @@ class AssetsPageRoutesState extends State<AssetsPageRoutes> {
           // },
           // maintenanceKey: widget.maintenanceKey,
         ),
-        Track(
+        Trackpage(
           key: ValueKey(selectedStation),
-          // selectedStationName: selectedStation!,
-          // onCardsChange: (bool _) {
-          //   setState(() {
-          //     currentPage = 0;
-          //   });
-          // },
+          selectedStationName: selectedStation!,
+          onCardsChange: (bool _) {
+            setState(() {
+              currentPage = 0;
+            });
+          },
           // onNavigateToMaintenanceForTrack: (int index) {
           //   widget.onNavigateToMaintenance();
           // },

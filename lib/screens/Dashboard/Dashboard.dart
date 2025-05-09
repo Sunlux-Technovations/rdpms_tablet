@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:badges/badges.dart' as badges;
 import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';          
@@ -44,8 +45,8 @@ class Dashboard extends StatefulWidget {
   State<Dashboard> createState() => DashboardState();
 }
 
-class DashboardState extends State<Dashboard> {
-  
+class DashboardState extends State<Dashboard>with SingleTickerProviderStateMixin  {
+     late final AnimationController refreshController;
   final SidebarXController controller =
       SidebarXController(selectedIndex: 0, extended: true);
   final dio = Dio();
@@ -81,6 +82,17 @@ bool renderCompleteState = false;
   @override
   void initState() {
     super.initState();
+    try {
+      refreshController = AnimationController(
+        vsync: this,
+        duration: const Duration(milliseconds: 800),
+      );
+    } catch (e) {
+
+      debugPrint('Error for refreshController: $e');
+      
+      rethrow;
+    }
     notificationPanelHeight = 416.h;
     screens = [
       Homepage(alertUpdates: alertFunction),
@@ -94,7 +106,7 @@ bool renderCompleteState = false;
       const Alerts(),
       const Maintenance(),
       const Profilepage(),
-    ];
+    ];  
     socketDataAlerts();
     controller.addListener(() {
       if (controller.extended) {
@@ -109,8 +121,10 @@ bool renderCompleteState = false;
 
   @override
   void dispose() {
+        refreshController.dispose();
     controller.dispose();
     autoCloseTimer?.cancel();
+       
     socket?.dispose();
     super.dispose();
   }
@@ -194,7 +208,7 @@ void socketDataAlerts() {
 }
 
 
-Future<void> _onRefresh() async {
+Future<void> onRefresh() async {
 
   setState(() {
     isLoadingAlerts = true;
@@ -467,7 +481,12 @@ GestureDetector(
         duration: const Duration(milliseconds: 300),
         curve: Curves.linear,
         width: 300.w,
-        height: showNotification ? notificationPanelHeight : 0,
+        height: showNotification
+            ? min(
+                MediaQuery.of(context).size.height * 0.6,
+                MediaQuery.of(context).size.height - panelTop - 20,
+              )
+            : 0,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12.r),
@@ -475,230 +494,254 @@ GestureDetector(
         ),
         clipBehavior: Clip.antiAlias,
         child: showNotification
-            ? Column(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.all(16.r),
-                    child: Text("Today's Alerts",
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.bold,
-                        )),
-                  ),
-                  Expanded(
-                    child: CustomRefreshIndicator(
-                      onRefresh: _onRefresh,
-                      triggerMode: IndicatorTriggerMode.anywhere,
-                      durations: const RefreshIndicatorDurations(
-                        completeDuration: Duration(seconds: 1),
-                      ),
-                      onStateChanged: (change) {
-                        if (change.didChange(to: IndicatorState.complete)) {
-                          renderCompleteState = true;
-                        } else if (change.didChange(to: IndicatorState.idle)) {
-                          renderCompleteState = false;
-                        }
-                      },
-                      builder: (context, child, controller) {
-                        final hp.CheckMarkColors style = renderCompleteState
-                            ? (hasError
-                                ? _checkMarkStyle.error
-                                : _checkMarkStyle.success)
-                            : _checkMarkStyle.loading;
-                        return Stack(
-                          alignment: Alignment.topCenter,
-                          children: [
-                            ClipRect(
-                              child: AnimatedBuilder(
-                                animation: controller,
-                                builder: (context, _) => Transform.translate(
-                                  offset: Offset(0, controller.value * 40),
-                                  child: child,
-                                ),
+            ? SingleChildScrollView(
+                physics: const NeverScrollableScrollPhysics(),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.all(12.r),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              "Today's Alerts",
+                              style: TextStyle(
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                            AnimatedBuilder(
-                              animation: controller,
-                              builder: (context, _) => Opacity(
-                                opacity: controller.isLoading
-                                    ? 1.0
-                                    : controller.value.clamp(0.0, 1.0),
-                                child: Container(
-                                  height: 80.h,
-                                  alignment: Alignment.center,
-                                  child: AnimatedContainer(
-                                    duration: const Duration(milliseconds: 150),
-                                    curve: Curves.linear,
-                                    width: 40.w,
-                                    height: 40.h,
-                                    decoration: BoxDecoration(
-                                      color: style.background,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Center(
-                                      child: renderCompleteState
-                                          ? Icon(
-                                              hasError
-                                                  ? Icons.close
-                                                  : Icons.check,
-                                              color: style.content,
-                                              size: 24.r,
-                                            )
-                                          : SizedBox(
-                                              height: 24.h,
-                                              width: 24.w,
-                                              child: CircularProgressIndicator(
-                                                strokeWidth: 2,
+                          ),
+                        RotationTransition(
+                            turns: refreshController,
+                            child: IconButton(
+                              icon: Icon(Icons.refresh, size: 24.r),
+                              onPressed: () {
+                                refreshController.forward(from: 0);
+                                onRefresh();
+                              },
+                            ),
+                          ),
+                      
+                        ],
+                      ),
+                    ),
+                    Divider(height: 1.h, color: Colors.grey),
+                    SizedBox(
+                      height: min(
+                              MediaQuery.of(context).size.height * 0.6,
+                              MediaQuery.of(context).size.height -
+                                  panelTop -
+                                  20) -
+                          60.h,
+                      child: CustomRefreshIndicator(
+                        onRefresh: onRefresh,
+                        triggerMode: IndicatorTriggerMode.anywhere,
+                        durations:
+                            const RefreshIndicatorDurations(completeDuration: Duration(seconds: 1)),
+                        onStateChanged: (change) {
+                          if (change.didChange(to: IndicatorState.complete)) {
+                            renderCompleteState = true;
+                          } else if (change.didChange(to: IndicatorState.idle)) {
+                            renderCompleteState = false;
+                          }
+                        },
+                        builder: (context, child, controller) {
+                          final hp.CheckMarkColors style =
+                              renderCompleteState
+                                  ? (hasError
+                                      ? _checkMarkStyle.error
+                                      : _checkMarkStyle.success)
+                                  : _checkMarkStyle.loading;
+                          return Stack(
+                            alignment: Alignment.topCenter,
+                            children: [
+                              ClipRect(
+                                child: AnimatedBuilder(
+                                  animation: controller,
+                                  builder: (context, _) => Transform.translate(
+                                    offset: Offset(0, controller.value * 40),
+                                    child: child,
+                                  ),
+                                ),
+                              ),
+                              AnimatedBuilder(
+                                animation: controller,
+                                builder: (context, _) => Opacity(
+                                  opacity:
+                                      controller.isLoading ? 1.0 : controller.value.clamp(0.0, 1.0),
+                                  child: Container(
+                                    height: 80.h,
+                                    alignment: Alignment.center,
+                                    child: AnimatedContainer(
+                                      duration: const Duration(milliseconds: 150),
+                                      curve: Curves.linear,
+                                      width: 40.w,
+                                      height: 40.h,
+                                      decoration: BoxDecoration(
+                                        color: style.background,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Center(
+                                        child: renderCompleteState
+                                            ? Icon(
+                                                hasError ? Icons.close : Icons.check,
                                                 color: style.content,
-                                                value: controller.isDragging ||
-                                                        controller.isArmed
-                                                    ? controller.value
-                                                        .clamp(0.0, 1.0)
-                                                    : null,
+                                                size: 24.r,
+                                              )
+                                            : SizedBox(
+                                                height: 24.h,
+                                                width: 24.w,
+                                                child: CircularProgressIndicator(
+                                                  strokeWidth: 2,
+                                                  color: style.content,
+                                                  value: controller.isDragging ||
+                                                          controller.isArmed
+                                                      ? controller.value.clamp(0.0, 1.0)
+                                                      : null,
+                                                ),
                                               ),
-                                            ),
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
-                        );
-                      },
-                      child: LayoutBuilder(
-                        builder: (context, constraints) {
-                          return SizedBox(
-                            height: constraints.maxHeight,
-                            child: notifyData.isEmpty
-                                ? Center(
-                                    child: Text('No alerts for today.',
+                            ],
+                          );
+                        },
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            return SizedBox(
+                              height: constraints.maxHeight,
+                              child: notifyData.isEmpty
+                                  ? Center(
+                                      child: Text(
+                                        'No alerts for today.',
                                         style: TextStyle(
                                           fontSize: 14.sp,
                                           fontWeight: FontWeight.w500,
-                                        )),
-                                  )
-                                : ListView.separated(
-                                    physics: const ClampingScrollPhysics(),
-                                 padding: EdgeInsets.only(bottom: 24.h, top: 8.h),
-                                    itemCount: notifyData.length,
-                                    separatorBuilder: (_, __) => Divider(
-                                        thickness: 1, color: Colors.grey),
-                                    itemBuilder: (context, idx) {
-                                      return SwipeActionCell(
-                                        key: ObjectKey(notifyData[idx]),
-                                        trailingActions: [
-                                          SwipeAction(
-                                            performsFirstActionWithFullSwipe: true,
-                                            title: 'Acknowledge',
-                                            style: TextStyle(
-                                              fontFamily: 'bold',
-                                              color: Appcolors.secondary,
-                                            ),
-                                            onTap: (handler) async {
-                                              handler(true);
-                                              if (idx < 0 ||
-                                                  idx >= notifyData.length) {
-                                                return;
-                                              }
-                                              await getAcknowledge(idx);
-                                              Future.delayed(
-                                                const Duration(milliseconds: 300),
-                                                () {
-                                                  if (idx >= 0 &&
-                                                      idx < notifyData.length) {
-                                                    setState(() =>
-                                                        notifyData.removeAt(idx));
-                                                    MotionToast.success(
-                                                      width: 300.w,
-                                                      height: 50.h,
-                                                      description: Text(
-                                                        "Notification Acknowledged",
-                                                        style: TextStyle(
-                                                            fontFamily: "bold",
-                                                            fontSize: 14.sp),
-                                                      ),
-                                                      position:
-                                                          MotionToastPosition.top,
-                                                    ).show(context);
-                                                  }
-                                                },
-                                              );
-                                            },
-                                            color: Colors.green,
-                                          ),
-                                        ],
-                                        child: InkWell(
-                                          onTap: () => showAlertDialog(idx),
-                                          child: Padding(
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: 8.h, horizontal: 10.w),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    Expanded(
-                                                      child: Text(
-                                                        '${notifyData[idx]['topic'].split("_")[4]} ${notifyData[idx]['alerttype']}',
-                                                        style: TextStyle(
-                                                          fontSize: 16.sp,
-                                                          fontWeight: FontWeight.bold,
-                                                          color: Appcolors.primary,
+                                        ),
+                                      ),
+                                    )
+                                  : ListView.separated(
+                                      physics: const ClampingScrollPhysics(),
+                                      padding: EdgeInsets.only(bottom: 24.h, top: 8.h),
+                                      itemCount: notifyData.length,
+                                      separatorBuilder: (_, __) =>
+                                          Divider(thickness: 1, color: Colors.grey),
+                                      itemBuilder: (context, idx) {
+                                        return SwipeActionCell(
+                                          key: ObjectKey(notifyData[idx]),
+                                          trailingActions: [
+                                            SwipeAction(
+                                              performsFirstActionWithFullSwipe: true,
+                                              title: 'Acknowledge',
+                                              style: TextStyle(
+                                                fontFamily: 'bold',
+                                                color: Appcolors.secondary,
+                                              ),
+                                              onTap: (handler) async {
+                                                handler(true);
+                                                if (idx < 0 || idx >= notifyData.length) {
+                                                  return;
+                                                }
+                                                await getAcknowledge(idx);
+                                                Future.delayed(
+                                                  const Duration(milliseconds: 300),
+                                                  () {
+                                                    if (idx >= 0 && idx < notifyData.length) {
+                                                      setState(() => notifyData.removeAt(idx));
+                                                      MotionToast.success(
+                                                        width: 300.w,
+                                                        height: 50.h,
+                                                        description: Text(
+                                                          "Notification Acknowledged",
+                                                          style: TextStyle(
+                                                              fontFamily: "bold", fontSize: 14.sp),
                                                         ),
-                                                        maxLines: 1,
-                                                        overflow:
-                                                            TextOverflow.ellipsis,
-                                                      ),
+                                                        position: MotionToastPosition.top,
+                                                      ).show(context);
+                                                    }
+                                                  },
+                                                );
+                                              },
+                                              color: Colors.green,
+                                            ),
+                                          ],
+                                          child: SizedBox(
+                                            height: 80.h,
+                                            child: InkWell(
+                                              onTap: () => showAlertDialog(idx),
+                                              child: Padding(
+                                                padding: EdgeInsets.symmetric(
+                                                    vertical: 8.h, horizontal: 10.w),
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment.spaceBetween,
+                                                      children: [
+                                                        Expanded(
+                                                          child: Text(
+                                                            '${notifyData[idx]['topic'].split("_")[4]} ${notifyData[idx]['alerttype']}',
+                                                            style: TextStyle(
+                                                              fontSize: 16.sp,
+                                                              fontWeight: FontWeight.bold,
+                                                              color: Appcolors.primary,
+                                                            ),
+                                                            maxLines: 1,
+                                                            overflow:
+                                                                TextOverflow.ellipsis,
+                                                          ),
+                                                        ),
+                                                        Text(
+                                                          DateFormat('HH:mm:ss').format(
+                                                            DateTime.parse(
+                                                                notifyData[idx]['alert_time']),
+                                                          ),
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
+                                                            fontWeight: FontWeight.w600,
+                                                            color: Appcolors.primary,
+                                                          ),
+                                                        ),
+                                                      ],
                                                     ),
+                                                    SizedBox(height: 4.h),
                                                     Text(
-                                                      DateFormat('HH:mm:ss').format(
-                                                        DateTime.parse(
-                                                            notifyData[idx]
-                                                                ['alert_time']),
-                                                      ),
-                                                      style: TextStyle(
-                                                        fontSize: 12.sp,
-                                                        fontWeight: FontWeight.w600,
-                                                        color: Appcolors.primary,
-                                                      ),
+                                                      notifyData[idx]['message']
+                                                                  .toString()
+                                                                  .length >
+                                                              40
+                                                          ? '${notifyData[idx]['message'].toString().substring(0, 40)}...'
+                                                          : notifyData[idx]['message'],
+                                                      maxLines: 2,
+                                                      overflow: TextOverflow.ellipsis,
+                                                      style: TextStyle(fontSize: 12.sp),
                                                     ),
                                                   ],
                                                 ),
-                                                SizedBox(height: 4.h),
-                                                Text(
-                                                  notifyData[idx]['message']
-                                                              .toString()
-                                                              .length >
-                                                          40
-                                                      ? '${notifyData[idx]['message'].toString().substring(0, 40)}...'
-                                                      : notifyData[idx]['message'],
-                                                  maxLines: 2,
-                                                  overflow: TextOverflow.ellipsis,
-                                                  style: TextStyle(fontSize: 12.sp),
-                                                ),
-                                              ],
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                          );
-                        },
+                                        );
+                                      },
+                                    ),
+                            );
+                          },
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               )
             : null,
       ),
     ),
   );
 }
+
 void showAlertDialog(int index) {
   showDialog(
     context: context,
