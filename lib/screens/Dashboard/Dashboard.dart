@@ -15,6 +15,7 @@ import 'package:flutter_swipe_action_cell/core/cell.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:intl/intl.dart';
 import 'package:motion_toast/motion_toast.dart';
+import 'package:rdpms_tablet/screens/AlertsPage/alertsPageRoutes.dart';
 import 'package:rdpms_tablet/screens/Assets/AssetsPagesRoute.dart';
 import 'package:rdpms_tablet/screens/constants/socketTopic.dart';
 import 'package:rdpms_tablet/screens/utils/image_picker_util.dart';
@@ -50,7 +51,8 @@ class DashboardState extends State<Dashboard>with SingleTickerProviderStateMixin
   final SidebarXController controller =
       SidebarXController(selectedIndex: 0, extended: true);
   final dio = Dio();
-
+ final GlobalKey<AlertsRoutesState> _alertsKey =
+      GlobalKey<AlertsRoutesState>();
   Timer? autoCloseTimer;
   bool showNotification = false;
   bool showProfilePanel = false;
@@ -103,7 +105,10 @@ bool renderCompleteState = false;
         // onNavigateToMaintenanceSignalPage: navigateToAlerts,
         // maintenanceKey: _maintenanceKey,
       ),
-      const Alerts(),
+       AlertsRoutes(
+        key: _alertsKey,
+        // onNavigateToAlerts: navigateToAlerts,
+      ),
       const Maintenance(),
       const Profilepage(),
     ];  

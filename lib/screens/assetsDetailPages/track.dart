@@ -635,18 +635,18 @@ if (apiMinTimeValue!.isAtSameMomentAs(apiMaxTimeValue!)) {
             primaryXAxis: DateTimeAxis(
               minimum: apiMinTimeValue,
               maximum: combinedMax,
-              desiredIntervals: 5,
+              desiredIntervals: 6,
               intervalType: DateTimeIntervalType.seconds,
               edgeLabelPlacement: EdgeLabelPlacement.shift,
               dateFormat: DateFormat('HH:mm:ss'),
-              labelStyle: const TextStyle(color: Colors.grey),
+              labelStyle:  TextStyle(color: Colors.grey,fontSize: 12.sp),
             ),
             primaryYAxis: const NumericAxis(
               labelStyle: TextStyle(color: Colors.grey),
             ),
             legend:
-                const Legend(isVisible: true, position: LegendPosition.bottom),
-            tooltipBehavior: TooltipBehavior(
+                 Legend(isVisible: true, position: LegendPosition.bottom,textStyle: TextStyle(fontSize: 12.sp)),
+            tooltipBehavior: TooltipBehavior(textStyle: TextStyle(fontSize: 12.sp),
                 enable: isGraphOpen && !isAnyAccordionOpen,
                 format: 'point.x: point.y'),
             zoomPanBehavior:
