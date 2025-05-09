@@ -67,7 +67,7 @@ class _SettingPageState extends State<SettingPage>
             ),
           ),
           title: Padding(
-            padding: EdgeInsets.only(left: 80.w),
+            padding: EdgeInsets.only(left: 350.w),
             child: UiHelper.heading2(
               text: "Settings",
               color: Appcolors.primary,

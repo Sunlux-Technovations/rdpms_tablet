@@ -1120,7 +1120,7 @@ class AlertsHistoryState extends State<AlertsHistory> {
     }
 
     return SizedBox(
-      width:double.infinity,
+      width: 270.w,
       height: 270.h,
       child: Card(
         elevation: 4.r,
@@ -1382,28 +1382,31 @@ class AlertsHistoryState extends State<AlertsHistory> {
                               SizedBox(
                                 width: double.infinity,
                                 height: 60.h,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    SizedBox(width: 40.w),
-                                    Expanded(
-                                      child: InkWell(
-                                        splashColor: Colors.transparent,
-                                        highlightColor: Colors.transparent,
-                                        onTap: () => getAlertsForDashboard(),
-                                        child: Center(
-                                          child: UiHelper.customHeadings(
-                                            text: "Alerts Dashboard",
+                                child: Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 10.h),
+                                  child: Center(
+                                    child: Row(
+                                         mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        SizedBox(width: 40.w),
+                                        InkWell(
+                                          splashColor: Colors.transparent,
+                                          highlightColor: Colors.transparent,
+                                          onTap: () => getAlertsForDashboard(),
+                                          child: Center(
+                                            child: UiHelper.customHeadings(
+                                              text: "Alerts Dashboard",
+                                            ),
                                           ),
+                                        ),    SizedBox(width: 8.w),
+                                        IconButton(
+                                          onPressed: () => widget.onGoToSettings(),
+                                          icon: Icon(Icons.settings, size: 30.r),
                                         ),
-                                      ),
+                                        SizedBox(width: 10.w),
+                                      ],
                                     ),
-                                    IconButton(
-                                      onPressed: () => widget.onGoToSettings(),
-                                      icon: Icon(Icons.settings, size: 30.r),
-                                    ),
-                                    SizedBox(width: 10.w),
-                                  ],
+                                  ),
                                 ),
                               ),
                               Padding(
