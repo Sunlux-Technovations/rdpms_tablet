@@ -1,12 +1,11 @@
-import 'dart:async';
 
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rdpms_tablet/screens/Loginscreen/Loginscreen.dart';
+import 'package:rdpms_tablet/screens/Dashboard/Dashboard.dart';
 import 'package:rdpms_tablet/widgets/UiHelper.dart';
-
-
-
 
 class Splashscreen extends StatefulWidget {
   const Splashscreen({super.key});
@@ -16,16 +15,24 @@ class Splashscreen extends StatefulWidget {
 }
 
 class SplashscreenState extends State<Splashscreen> {
-  static const LOGINKEY = "login";
-
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+    Timer(const Duration(seconds: 2), () async {
+      final prefs = await SharedPreferences.getInstance();
+      final bool loggedIn = prefs.getBool('isLoggedIn') ?? false;
 
-    Timer(Duration(seconds: 2), () {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => Loginscreen()));
+      if (loggedIn) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const Dashboard()),
+        );
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const Loginscreen()),
+        );
+      }
     });
   }
 
@@ -42,32 +49,30 @@ class SplashscreenState extends State<Splashscreen> {
           Container(
             width: double.infinity,
             height: double.infinity,
-            color: Color.fromRGBO(0, 0, 0, 0.5),
+            color: const Color.fromRGBO(0, 0, 0, 0.5),
           ),
           SizedBox(
             width: double.infinity,
             height: double.infinity,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 CircleAvatar(
                   backgroundColor: Colors.transparent,
                   radius: 89.r,
                   child: UiHelper.customImage(img: "trail_logo.png"),
                 ),
-                SizedBox(
-                  height: 10.h,
-                ),
+                SizedBox(height: 10.h),
                 UiHelper.customText(
-                    text: "RDPMS",
-                    color: Colors.white,
-                    fontsize: 40.sp,
-                    fontFamily: "bold",
-                    fontWeight: FontWeight.bold)
+                  text: "RDPMS",
+                  color: Colors.white,
+                  fontsize: 40.sp,
+                  fontFamily: "bold",
+                  fontWeight: FontWeight.bold,
+                ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );

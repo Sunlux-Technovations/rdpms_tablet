@@ -59,31 +59,14 @@ class MyApp extends StatelessWidget {
 
 class LandscapeLockedWrapper extends StatelessWidget {
   final Widget child;
-  
   const LandscapeLockedWrapper({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
-    return OrientationBuilder(
-      builder: (context, orientation) {
-        
-        return Scaffold(
-          body: SafeArea(
-            child: Row(
-              children: [
-                Expanded(
-                  child: MediaQuery(
-                    data: MediaQuery.of(context).copyWith(
-                    ),
-                    child: child,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
+    return Scaffold(
+      body: SafeArea(child: child),
     );
   }
 }
+
 

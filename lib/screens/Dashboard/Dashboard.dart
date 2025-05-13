@@ -19,6 +19,7 @@ import 'package:rdpms_tablet/screens/AlertsPage/alertsPageRoutes.dart';
 import 'package:rdpms_tablet/screens/Assets/AssetsPagesRoute.dart';
 import 'package:rdpms_tablet/screens/constants/socketTopic.dart';
 import 'package:rdpms_tablet/screens/utils/image_picker_util.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sidebarx/sidebarx.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:rdpms_tablet/screens/Homepage/Homepage.dart' as hp;
@@ -26,7 +27,6 @@ import 'package:rdpms_tablet/Apis/Urls.dart';
 import 'package:rdpms_tablet/Apis/dioInstance.dart';
 
 import 'package:rdpms_tablet/main.dart';
-import 'package:rdpms_tablet/screens/AlertsPage/Alerts.dart';
 import 'package:rdpms_tablet/screens/Homepage/Homepage.dart';
 import 'package:rdpms_tablet/screens/Loginscreen/Loginscreen.dart';
 import 'package:rdpms_tablet/screens/MaintenancePage/Maintenance.dart';
@@ -204,7 +204,7 @@ void socketDataAlerts() {
         }
       });
     } catch (e) {
-      print('Socket parse error: $e');
+      print('Socket error: $e');
     }
   });
 
@@ -233,9 +233,7 @@ Future<void> onRefresh() async {
       });
       
 
-      socket!.emit('fetchAlerts', {
-        'username': GlobalData().userName,
-      });
+
     }
 
 
@@ -245,12 +243,20 @@ Future<void> onRefresh() async {
     if (notifyData.length == previousCount) {
       MotionToast.warning(
         width: 300.w,
-        height: 50.h,
+        height: 70.h,
         description: Text(
           "No new alerts available.",
           style: TextStyle(fontFamily: "bold", fontSize: 14.sp),
         ),
-        position: MotionToastPosition.top,
+        position: MotionToastPosition.top, 
+         toastAlignment: Alignment.topCenter,
+        margin: EdgeInsets.only(
+        top: MediaQuery.of(context).padding.top + 12.h,
+        left: 16.w,
+        right: 16.w,
+        ),
+         animationType: AnimationType.slideInFromTop,            
+        animationDuration: const Duration(milliseconds: 600),
       ).show(context);
     }
   } catch (e) {
@@ -258,12 +264,20 @@ Future<void> onRefresh() async {
 
     MotionToast.error(
       width: 300.w,
-      height: 50.h,
+      height: 70.h,
       description: Text(
         "Failed to refresh alerts. Please try again.",
         style: TextStyle(fontFamily: "bold", fontSize: 14.sp),
       ),
-      position: MotionToastPosition.top,
+      position: MotionToastPosition.top, 
+         toastAlignment: Alignment.topCenter,
+        margin: EdgeInsets.only(
+        top: MediaQuery.of(context).padding.top + 12.h,
+        left: 16.w,
+        right: 16.w,
+        ),
+         animationType: AnimationType.slideInFromTop,            
+        animationDuration: const Duration(milliseconds: 600),
     ).show(context);
   } finally {
    
@@ -658,13 +672,21 @@ GestureDetector(
                                                       setState(() => notifyData.removeAt(idx));
                                                       MotionToast.success(
                                                         width: 300.w,
-                                                        height: 50.h,
+                                                        height: 70.h,
                                                         description: Text(
                                                           "Notification Acknowledged",
                                                           style: TextStyle(
                                                               fontFamily: "bold", fontSize: 14.sp),
                                                         ),
-                                                        position: MotionToastPosition.top,
+                                                      position: MotionToastPosition.top, 
+         toastAlignment: Alignment.topCenter,
+        margin: EdgeInsets.only(
+        top: MediaQuery.of(context).padding.top + 12.h,
+        left: 16.w,
+        right: 16.w,
+        ),
+         animationType: AnimationType.slideInFromTop,            
+        animationDuration: const Duration(milliseconds: 600),
                                                       ).show(context);
                                                     }
                                                   },
@@ -832,8 +854,18 @@ void showAlertDialog(int index) {
                   setState(() => notifyData.removeAt(index));
                   Navigator.pop(context);
                   MotionToast.success(
+                      width: 300.w,
+                      height: 70.h,
                           description: const Text('Notification Acknowledged'),
-                          position: MotionToastPosition.top)
+                      position: MotionToastPosition.top, 
+         toastAlignment: Alignment.topCenter,
+        margin: EdgeInsets.only(
+        top: MediaQuery.of(context).padding.top + 12.h,
+        left: 16.w,
+        right: 16.w,
+        ),
+         animationType: AnimationType.slideInFromTop,            
+        animationDuration: const Duration(milliseconds: 600),)
                       .show(context);
                 },
                 child:  Text('Acknowledge',style: TextStyle(color: Colors.white,fontSize: 11.sp),),
@@ -877,8 +909,18 @@ void showAlertDialog(int index) {
                   await getAcknowledge(idx);
                   setState(() => notifyData.removeAt(idx));
                   MotionToast.success(
+                      width: 300.w,
+                      height: 70.h,
                     description: const Text('Notification Acknowledged'),
-                    position: MotionToastPosition.top,
+       position: MotionToastPosition.top, 
+         toastAlignment: Alignment.topCenter,
+        margin: EdgeInsets.only(
+        top: MediaQuery.of(context).padding.top + 12.h,
+        left: 16.w,
+        right: 16.w,
+        ),
+         animationType: AnimationType.slideInFromTop,            
+        animationDuration: const Duration(milliseconds: 600),
                   ).show(context);
                 },
                 child: Container(
@@ -951,7 +993,9 @@ void showAlertDialog(int index) {
                             onPressed: () => Navigator.pop(context),
                             child: const Text('No')),
                         TextButton(
-                            onPressed: () {
+                            onPressed: () async {
+                                  final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isLoggedIn', false);
                               Navigator.pushAndRemoveUntil(
                                   context,
                                   MaterialPageRoute(

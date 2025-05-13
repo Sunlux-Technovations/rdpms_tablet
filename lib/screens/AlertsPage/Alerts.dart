@@ -162,13 +162,24 @@ class AlertsHistoryState extends State<AlertsHistory> {
     } catch (e) {
       MotionToast.error(
         width: 300.w,
-        height: 50.h,
+        height: 70.h,
         description: Text("Failed to refresh data",
             style: TextStyle(
               fontFamily: "bold",
               fontSize: 14.sp,
             )),
-        position: MotionToastPosition.top,
+        // position: MotionToastPosition.top,
+          position: MotionToastPosition.top, 
+         toastAlignment: Alignment.topCenter,
+                //  animationType: AnimationType.slideInFromTop,   
+        margin: EdgeInsets.only(
+        top: MediaQuery.of(context).padding.top + 12.h,
+        left: 16.w,
+        right: 16.w,
+        ),
+          
+        animationDuration: const Duration(milliseconds: 600),
+                // animationType: AnimationType.slideInFromTop,   
       ).show(context);
     } finally {
       setState(() {
@@ -509,7 +520,15 @@ class AlertsHistoryState extends State<AlertsHistory> {
                   fontFamily: "bold",
                   fontSize: 14.sp,
                 )),
-            position: MotionToastPosition.top,
+            position: MotionToastPosition.top, 
+         toastAlignment: Alignment.topCenter,
+        margin: EdgeInsets.only(
+        top: MediaQuery.of(context).padding.top + 12.h,
+        left: 16.w,
+        right: 16.w,
+        ),
+        //  animationType: AnimationType.slideInFromTop,            
+        animationDuration: const Duration(milliseconds: 600),
           ).show(context);
         } else {
           MotionToast.error(
