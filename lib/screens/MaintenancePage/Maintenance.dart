@@ -15,7 +15,7 @@ class _MaintenanceState extends State<Maintenance> {
   
       body: Center(
         child: Text(
-          'Welcome to the Maintenance Page!',
+          'Welcome to the Maintenance Page! hiiiiii',
           style: TextStyle(fontSize: 24.sp),
         ),
       ),
