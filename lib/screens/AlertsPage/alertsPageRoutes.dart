@@ -24,11 +24,11 @@ class AlertsRoutesState extends State<AlertsRoutes> {
     const totalPages = 2;
     if (newPage < 0) newPage = 0;
     if (newPage >= totalPages) newPage = totalPages - 1;
-    if (currentPage == 0 && newPage != 0) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _alertsHistoryKey.currentState?.resetDropdowns();
-      });
-    }
+    // if (currentPage == 0 && newPage != 0) {
+    //   WidgetsBinding.instance.addPostFrameCallback((_) {
+    //     _alertsHistoryKey.currentState?.resetDropdowns();
+    //   });
+    // }
     setState(() {
       currentPage = newPage;
     });
@@ -40,9 +40,9 @@ class AlertsRoutesState extends State<AlertsRoutes> {
     }
   }
 
-  void resetAlertsDropdowns() {
-    _alertsHistoryKey.currentState?.resetDropdowns();
-  }
+  // void resetAlertsDropdowns() {
+  //   _alertsHistoryKey.currentState?.resetDropdowns();
+  // }
 
   void moveToHistory([Map<String, dynamic>? alertData]) {
     setState(() {

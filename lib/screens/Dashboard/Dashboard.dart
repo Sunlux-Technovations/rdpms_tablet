@@ -110,7 +110,7 @@ bool renderCompleteState = false;
         // onNavigateToAlerts: navigateToAlerts,
       ),
       const Maintenance(),
-      const Profilepage(),
+
     ];  
     socketDataAlerts();
     controller.addListener(() {

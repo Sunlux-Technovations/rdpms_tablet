@@ -75,12 +75,12 @@ class AssetsPageRoutesState extends State<AssetsPageRoutes> {
         ),
         Pointmachine(
           key: ValueKey(selectedStation),
-          // selectedStationName: selectedStation!,
-          // onCardsChange: (bool _) {
-          //   setState(() {
-          //     currentPage = 0;
-          //   });
-          // },
+          selectedStationName: selectedStation!,
+          onCardsChange: (bool _) {
+            setState(() {
+              currentPage = 0;
+            });
+          },
           // onNavigateToAlerts: (int index) {
           //   widget.onNavigateToMaintenanceSignalPage();
           // },

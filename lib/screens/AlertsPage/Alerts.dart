@@ -9,14 +9,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
 import 'package:motion_toast/motion_toast.dart';
-
 import 'package:rdpms_tablet/Apis/Urls.dart';
 import 'package:rdpms_tablet/Apis/dioInstance.dart';
 import 'package:rdpms_tablet/main.dart';
 import 'package:rdpms_tablet/screens/AlertsPage/settings.dart';
 import 'package:rdpms_tablet/widgets/UiHelper.dart';
 import 'package:rdpms_tablet/widgets/appColors.dart';
-import 'package:snapping_sheet/snapping_sheet.dart';
 
 import 'package:syncfusion_flutter_charts/charts.dart';
 
@@ -44,13 +42,13 @@ class AlertsHistoryState extends State<AlertsHistory> {
   List<dynamic> alertHistoryDataForSearch = [];
   Map<String, dynamic> alertStationData = {};
   Map<String, dynamic> jsonData = {};
-  late List<_ChartData> chartData = [], barData;
+  late List<ChartData> chartData = [], barData;
   final TextEditingController alertSearchController = TextEditingController();
   final ScrollController scrollController = ScrollController();
-  final SnappingSheetController sheetController = SnappingSheetController();
+
   double currentSheetFactor = 0.37;
   double? oldHeight;
-  bool _isFetchingMore = false;
+  bool isFetchingMore = false;
   int displayedItemCount = 10;
   bool renderCompleteState = false, hasError = false;
   bool visiblesetting = false;
@@ -89,28 +87,14 @@ class AlertsHistoryState extends State<AlertsHistory> {
     ]);
     setState(() {
       barData = [
-        _ChartData('Track', 30),
-        _ChartData('PM', 45),
-        _ChartData('Signal', 60),
+        ChartData('Track', 30),
+        ChartData('PM', 45),
+        ChartData('Signal', 60),
       ];
     });
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final newHeight = MediaQuery.of(context).size.height;
-    if (oldHeight != null && (oldHeight! - newHeight).abs() > 0.5) {
-      sheetController.snapToPosition(
-        const SnappingPosition.factor(
-          positionFactor: 0.37,
-          snappingCurve: Curves.linear,
-          snappingDuration: Duration(milliseconds: 200),
-        ),
-      );
-    }
-    oldHeight = newHeight;
-  }
+
 
   @override
   void dispose() {
@@ -131,12 +115,10 @@ class AlertsHistoryState extends State<AlertsHistory> {
   Future<void> onRefresh() async {
     setState(() {
       isLoading = true;
-
       selectedValues = null;
       selectedAssets = null;
       selectedDevices = null;
       isDataAvilable = true;
-
       responseData.clear();
       filteredData.clear();
       alertHistoryData.clear();
@@ -152,34 +134,19 @@ class AlertsHistoryState extends State<AlertsHistory> {
         getAlertsForDashboard(),
         getAlertsHistory(),
       ]);
-      sheetController.snapToPosition(
-        const SnappingPosition.factor(
-          positionFactor: 0.37,
-          snappingCurve: Curves.linear,
-          snappingDuration: Duration(milliseconds: 300),
-        ),
-      );
     } catch (e) {
       MotionToast.error(
         width: 300.w,
         height: 70.h,
         description: Text("Failed to refresh data",
-            style: TextStyle(
-              fontFamily: "bold",
-              fontSize: 14.sp,
-            )),
-        // position: MotionToastPosition.top,
-          position: MotionToastPosition.top, 
-         toastAlignment: Alignment.topCenter,
-                //  animationType: AnimationType.slideInFromTop,   
+            style: TextStyle(fontFamily: "bold", fontSize: 14.sp)),
+        position: MotionToastPosition.top,
+        toastAlignment: Alignment.topCenter,
         margin: EdgeInsets.only(
-        top: MediaQuery.of(context).padding.top + 12.h,
-        left: 16.w,
-        right: 16.w,
-        ),
-          
+            top: MediaQuery.of(context).padding.top + 12.h,
+            left: 16.w,
+            right: 16.w),
         animationDuration: const Duration(milliseconds: 600),
-                // animationType: AnimationType.slideInFromTop,   
       ).show(context);
     } finally {
       setState(() {
@@ -199,7 +166,7 @@ class AlertsHistoryState extends State<AlertsHistory> {
 
   Future getAlertsForDashboard() async {
     try {
-      var alerts = await dioInstance.get(alertDashboard);
+      var alerts = await dioInstance. get(alertDashboard);
       setState(() {
         alertStationData = alerts;
       });
@@ -262,12 +229,12 @@ class AlertsHistoryState extends State<AlertsHistory> {
               (newer['alert_time'] ?? '').compareTo(older['alert_time'] ?? ''));
           break;
         case 'Task Name : A-Z':
-          sortedData.sort(
-              (firstTask, nextTask) => (firstTask['message'] ?? '').compareTo(nextTask['message'] ?? ''));
+          sortedData.sort((firstTask, nextTask) => (firstTask['message'] ?? '')
+              .compareTo(nextTask['message'] ?? ''));
           break;
         case 'Task Name : Z-A':
-          sortedData.sort(
-              (firstTask, nextTask) => (nextTask['message'] ?? '').compareTo(firstTask['message'] ?? ''));
+          sortedData.sort((firstTask, nextTask) => (nextTask['message'] ?? '')
+              .compareTo(firstTask['message'] ?? ''));
           break;
       }
       filteredData = sortedData;
@@ -275,19 +242,14 @@ class AlertsHistoryState extends State<AlertsHistory> {
   }
 
   Future<void> showAcknowledgeAlert() async {
-      final String username = GlobalData().userName;
-  final String url      = '$showAckAlert?username=$username';
+    final String username = GlobalData().userName;
+    final String url = '$showAckAlert?username=$username';
     try {
-
-      final response =
-          await dioInstance.get(url);
+      final response = await dioInstance.get(url);
       if (response is List && response.isNotEmpty) {
         setState(() {
           ackData = List<Map<String, dynamic>>.from(response);
         });
-        print("Ack data updated with ${ackData.length} acknowledged alerts.");
-      } else {
-        print("No acknowledged alerts found.");
       }
     } catch (e) {
       print("No acknowledge alerts error: $e");
@@ -319,9 +281,8 @@ class AlertsHistoryState extends State<AlertsHistory> {
 
   Future<bool> getAck(String alertId) async {
     try {
-      final response = await dioInstance.post(getAckAlerts,
-          {"alertid": alertId, 'username': GlobalData().userName});
-      print(response);
+      await dioInstance
+          .post(getAckAlerts, {"alertid": alertId, 'username': GlobalData().userName});
       return true;
     } catch (e) {
       print("Error acknowledging alert: $e");
@@ -333,10 +294,10 @@ class AlertsHistoryState extends State<AlertsHistory> {
     setState(() {
       isLoading = true;
     });
-    final String url=  "$getAlertHistory?station=${selectedValues ?? ''}&assets=${selectedAssets ?? ''}&tag_id=${selectedDevices ?? ''}";
+    final String url =
+        "$getAlertHistory?station=${selectedValues ?? ''}&assets=${selectedAssets ?? ''}&tag_id=${selectedDevices ?? ''}";
     try {
       final response = await dioInstance.get(url);
-        
       if (response != null && response.isNotEmpty) {
         response.forEach((alert) {
           alert['acknowledged'] =
@@ -402,7 +363,6 @@ class AlertsHistoryState extends State<AlertsHistory> {
         assetLists.addAll(
             values.where((key) => response[key]?.isNotEmpty ?? false).toList());
         isStationDataAvailable = assetLists.isNotEmpty;
-
         setState(() {
           assetsList = assetLists;
           selectedDevices = null;
@@ -451,16 +411,16 @@ class AlertsHistoryState extends State<AlertsHistory> {
 
   void loadMore() async {
     int totalCount = filteredData.length;
-    if (displayedItemCount < totalCount && !_isFetchingMore) {
+    if (displayedItemCount < totalCount && !isFetchingMore) {
       setState(() {
-        _isFetchingMore = true;
+        isFetchingMore = true;
       });
       await Future.delayed(const Duration(seconds: 1));
       setState(() {
         displayedItemCount = (displayedItemCount + 10) > totalCount
             ? totalCount
             : displayedItemCount + 10;
-        _isFetchingMore = false;
+        isFetchingMore = false;
       });
     }
   }
@@ -489,7 +449,6 @@ class AlertsHistoryState extends State<AlertsHistory> {
     }
     final String alertMessage =
         (alertData['message'] as String?) ?? "No Message";
-
     Future<void> acknowledgeButton() async {
       if (!isAcknowledged) {
         final alertId = alertData['id']?.toString() ?? "";
@@ -516,29 +475,21 @@ class AlertsHistoryState extends State<AlertsHistory> {
             width: 300.w,
             height: 50.h,
             description: Text("Notification Acknowledged",
-                style: TextStyle(
-                  fontFamily: "bold",
-                  fontSize: 14.sp,
-                )),
-            position: MotionToastPosition.top, 
-         toastAlignment: Alignment.topCenter,
-        margin: EdgeInsets.only(
-        top: MediaQuery.of(context).padding.top + 12.h,
-        left: 16.w,
-        right: 16.w,
-        ),
-        //  animationType: AnimationType.slideInFromTop,            
-        animationDuration: const Duration(milliseconds: 600),
+                style: TextStyle(fontFamily: "bold", fontSize: 14.sp)),
+            position: MotionToastPosition.top,
+            toastAlignment: Alignment.topCenter,
+            margin: EdgeInsets.only(
+                top: MediaQuery.of(context).padding.top + 12.h,
+                left: 16.w,
+                right: 16.w),
+            animationDuration: const Duration(milliseconds: 600),
           ).show(context);
         } else {
           MotionToast.error(
             width: 300.w,
             height: 50.h,
             description: Text("Failed to acknowledge alert. Please try again.",
-                style: TextStyle(
-                  fontFamily: "bold",
-                  fontSize: 14.sp,
-                )),
+                style: TextStyle(fontFamily: "bold", fontSize: 14.sp)),
             position: MotionToastPosition.top,
           ).show(context);
         }
@@ -669,26 +620,18 @@ class AlertsHistoryState extends State<AlertsHistory> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            UiHelper.xsmalltxt_bold(
-              text: dateTime[0],
-            ),
+            UiHelper.xsmalltxt_bold(text: dateTime[0]),
             SizedBox(height: 5.h),
-            UiHelper.xsmalltxt_bold(
-              text: dateTime[1],
-            ),
+            UiHelper.xsmalltxt_bold(text: dateTime[1]),
             if (isAcknowledged && alertData['acknowledged_time'] != null)
               Padding(
                 padding: EdgeInsets.only(top: 10.h),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    UiHelper.xsmalltxt_bold(
-                      text: ackDateTime[0],
-                    ),
+                    UiHelper.xsmalltxt_bold(text: ackDateTime[0]),
                     SizedBox(height: 5.h),
-                    UiHelper.xsmalltxt_bold(
-                      text: ackDateTime[1],
-                    ),
+                    UiHelper.xsmalltxt_bold(text: ackDateTime[1]),
                   ],
                 ),
               ),
@@ -702,7 +645,7 @@ class AlertsHistoryState extends State<AlertsHistory> {
       Function(String?) onChanged) {
     return SizedBox(
       width: 110.w,
-      height: 90.h,
+      height: 115.h,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -712,7 +655,7 @@ class AlertsHistoryState extends State<AlertsHistory> {
                 : hint == "Assets"
                     ? "assets/images/sensor (2).svg"
                     : "assets/images/chip.svg",
-            width: 35.w,
+            width: 38.w,
           ),
           Expanded(
             flex: 2,
@@ -724,10 +667,9 @@ class AlertsHistoryState extends State<AlertsHistory> {
                   child: Text(value ?? hint,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontFamily: "regular",
-                        fontSize: 14.sp,
-                        color: Appcolors.primary,
-                      )),
+                          fontFamily: "regular",
+                          fontSize: 14.sp,
+                          color: Appcolors.primary)),
                 ),
                 onChanged: onChanged,
                 items: items.map((String item) {
@@ -737,17 +679,18 @@ class AlertsHistoryState extends State<AlertsHistory> {
                         style: TextStyle(
                             fontWeight: FontWeight.w800,
                             fontSize: 14.sp,
+                            overflow: TextOverflow.ellipsis,
                             color: Appcolors.primary,
                             fontFamily: "bold")),
                   );
                 }).toList(),
                 buttonStyleData: ButtonStyleData(
                     padding:
-                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
                     height: 60.h,
                     width: 200.w),
                 dropdownStyleData: DropdownStyleData(
-                    maxHeight: 200.h,
+                    maxHeight: 250.h,
                     width: 140.w,
                     decoration: BoxDecoration(
                         color: hint == "Station"
@@ -775,12 +718,9 @@ class AlertsHistoryState extends State<AlertsHistory> {
             child: Container(
               width: 160.w,
               decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(
-                  color: Appcolors.primary,
-                ),
-                borderRadius: BorderRadius.circular(10.r),
-              ),
+                  color: Colors.white,
+                  border: Border.all(color: Appcolors.primary),
+                  borderRadius: BorderRadius.circular(10.r)),
               child: TextField(
                 controller: alertSearchController,
                 textAlignVertical: TextAlignVertical.center,
@@ -801,9 +741,11 @@ class AlertsHistoryState extends State<AlertsHistory> {
           TextButton.icon(
             onPressed: () {
               showModalBottomSheet(
+                
                 context: context,
                 builder: (BuildContext context) {
                   return Container(
+
                     padding: EdgeInsets.all(16.r),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -875,7 +817,7 @@ class AlertsHistoryState extends State<AlertsHistory> {
             children: [
               SizedBox(
                 width: 55.w,
-                height: 25.h,
+                height: 30.h,
                 child: AnimatedToggleSwitch.dual(
                   animationCurve: Curves.linear,
                   current: positive,
@@ -913,9 +855,10 @@ class AlertsHistoryState extends State<AlertsHistory> {
                           radius: 20.r,
                           backgroundColor: Colors.green,
                           child: Icon(Icons.done_all, size: 18.r))
-                      : ClipOval(
-                          child: Container(
-                              width: 15.w, height: 15.h, color: Colors.grey),
+                      : CircleAvatar(
+                              radius: 10.r,
+                                     backgroundColor: Colors.grey,
+                      
                         ),
                 ),
               ),
@@ -937,12 +880,15 @@ class AlertsHistoryState extends State<AlertsHistory> {
     final int itemsToDisplay =
         displayedItemCount < totalCount ? displayedItemCount : totalCount;
     if (filteredData.isEmpty) {
-      return Center(
+      return Padding(
+          padding: EdgeInsets.only(top: 150.h),
         child: isLoading
             ? LoadingAnimationWidget.stretchedDots(
                 color: Colors.blue, size: 50.r)
             : Padding(
-                padding: EdgeInsets.all(30.r),
+              padding: EdgeInsets.only(top: 50.h),
+              child: Align(
+                alignment: Alignment.center,
                 child: Text("No alerts found.",
                     style: TextStyle(
                         fontFamily: "bold",
@@ -950,6 +896,7 @@ class AlertsHistoryState extends State<AlertsHistory> {
                         color: Colors.grey,
                         fontWeight: FontWeight.bold)),
               ),
+            ),
       );
     }
     return Column(
@@ -993,9 +940,8 @@ class AlertsHistoryState extends State<AlertsHistory> {
                               SizedBox(height: 5.h),
                               Text(messageAfter,
                                   style: TextStyle(
-                                    fontSize: 14.sp,
-                                    color: Appcolors.primary,
-                                  )),
+                                      fontSize: 14.sp,
+                                      color: Appcolors.primary)),
                               SizedBox(height: 10.h),
                               Material(
                                 elevation: 1.r,
@@ -1011,10 +957,9 @@ class AlertsHistoryState extends State<AlertsHistory> {
                                     child: Center(
                                       child: Text(alert['alerttype'],
                                           style: TextStyle(
-                                            fontFamily: "bold",
-                                            fontSize: 17.sp,
-                                            color: Appcolors.primary,
-                                          )),
+                                              fontFamily: "bold",
+                                              fontSize: 17.sp,
+                                              color: Appcolors.primary)),
                                     ),
                                   ),
                                 ),
@@ -1030,17 +975,15 @@ class AlertsHistoryState extends State<AlertsHistory> {
                             children: [
                               Text(dt[0],
                                   style: TextStyle(
-                                    fontFamily: "bold",
-                                    fontSize: 12.sp,
-                                    color: Appcolors.primary,
-                                  )),
+                                      fontFamily: "bold",
+                                      fontSize: 12.sp,
+                                      color: Appcolors.primary)),
                               SizedBox(height: 5.h),
                               Text(dt[1],
                                   style: TextStyle(
-                                    fontFamily: "bold",
-                                    fontSize: 12.sp,
-                                    color: Appcolors.primary,
-                                  )),
+                                      fontFamily: "bold",
+                                      fontSize: 12.sp,
+                                      color: Appcolors.primary)),
                               SizedBox(height: 10.h),
                               if (positive)
                                 Icon(Icons.done_all,
@@ -1060,7 +1003,7 @@ class AlertsHistoryState extends State<AlertsHistory> {
             );
           },
         ),
-        if (_isFetchingMore)
+        if (isFetchingMore)
           Padding(
             padding: EdgeInsets.symmetric(vertical: 16.h),
             child: const CircularProgressIndicator(),
@@ -1070,17 +1013,16 @@ class AlertsHistoryState extends State<AlertsHistory> {
   }
 
   Widget buildStationChart() {
-    List<_ChartData> localChartData = [];
-    print(alertStationData);
+    List<ChartData> localChartData = [];
     if (alertStationData.isNotEmpty) {
       for (var i in alertStationData["AlertsByStation"]) {
         localChartData
-            .add(_ChartData(i["name"].toString(), double.parse(i["count"])));
+            .add(ChartData(i["name"].toString(), double.parse(i["count"])));
       }
     }
     return SizedBox(
-      width: 200.w,
-      height: 170.h,
+      width: 250.w,
+      height: 270.h,
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -1091,10 +1033,10 @@ class AlertsHistoryState extends State<AlertsHistory> {
                 itemPadding: 10),
             tooltipBehavior: TooltipBehavior(enable: true),
             series: <CircularSeries>[
-              DoughnutSeries<_ChartData, String>(
+              DoughnutSeries<ChartData, String>(
                 dataSource: localChartData,
-                xValueMapper: (_ChartData data, _) => data.x,
-                yValueMapper: (_ChartData data, _) => data.y,
+                xValueMapper: (ChartData data, _) => data.x,
+                yValueMapper: (ChartData data, _) => data.y,
                 strokeWidth: 0.3.w,
                 radius: '105%',
                 innerRadius: '45',
@@ -1103,60 +1045,56 @@ class AlertsHistoryState extends State<AlertsHistory> {
               )
             ],
           ),
-          Positioned(
-            bottom: 60.h,
-            child: Text(
-              '${(alertStationData["AlertsByStation"] is List && (alertStationData["AlertsByStation"] as List).isNotEmpty) ? alertStationData["AlertsByStation"][0]["count"] : 0}',
-              style: TextStyle(
-                fontSize: 20.sp,
-                fontWeight: FontWeight.bold,
-                color: Appcolors.primary,
-              ),
+      Align(
+          alignment: Alignment.center,
+          child: Text(
+            '${(alertStationData["AlertsByStation"] is List &&
+                    (alertStationData["AlertsByStation"] as List).isNotEmpty)
+                ? alertStationData["AlertsByStation"][0]["count"]
+                : 0}',
+            style: TextStyle(
+              fontSize: 22.sp,
+              fontWeight: FontWeight.bold,
+              color: Appcolors.primary,
             ),
           ),
+        ),
         ],
       ),
     );
   }
 
   Widget buildDeviceChart() {
-    List<_ChartData> barGraph = [];
+    List<ChartData> barGraph = [];
     if (alertStationData.isNotEmpty) {
       var devicesListData = alertStationData['alertsbyDevice'] as List;
       var signalData = devicesListData
           .firstWhere((el) => el['name'] == 'Signal', orElse: () => null);
       var pointData = devicesListData
           .firstWhere((el) => el['name'] == 'Pointmachine', orElse: () => null);
-      var trackData = devicesListData.firstWhere((el) => el['name'] == 'Track',
-          orElse: () => null);
-
-      barGraph.add(_ChartData('Signal',
+      var trackData = devicesListData
+          .firstWhere((el) => el['name'] == 'Track', orElse: () => null);
+      barGraph.add(ChartData('Signal',
           signalData != null ? double.parse(signalData['count']) : 0.0));
-      barGraph.add(_ChartData(
+      barGraph.add(ChartData(
           'Point', pointData != null ? double.parse(pointData['count']) : 0.0));
-      barGraph.add(_ChartData(
+      barGraph.add(ChartData(
           'Track', trackData != null ? double.parse(trackData['count']) : 0.0));
     }
-
     return SizedBox(
-      width: 270.w,
-      height: 270.h,
+      width: 300.w,
+      height: 310.h,
       child: Card(
         elevation: 4.r,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Padding(
-              padding: EdgeInsets.all(5.r),
-              child: Center(
-                child: UiHelper.smallText_bold(
-                  text: "Alerts by Device Types",
-                ),
-              ),
-            ),
+           mainAxisSize: MainAxisSize.min,
+          children: [      SizedBox(height:5.h),
+               UiHelper.smallText_bold(text: "Alerts by Device"),
+      UiHelper.smallText_bold(text: "Types"),
             Expanded(
               child: barGraph.every((d) => d.y == 0.0)
-                  ? Center(child: UiHelper.NDF(text: "No alerts avliable."))
+                  ? Align(alignment: Alignment.center,
+                    child: UiHelper.NDF(text: "No alerts avliable."))
                   : Padding(
                       padding: EdgeInsets.only(bottom: 8.h),
                       child: SfCartesianChart(
@@ -1165,8 +1103,8 @@ class AlertsHistoryState extends State<AlertsHistory> {
                         primaryYAxis: const NumericAxis(
                             minimum: 0, maximum: 100, interval: 25),
                         tooltipBehavior: TooltipBehavior(enable: true),
-                        series: <CartesianSeries<_ChartData, String>>[
-                          BarSeries<_ChartData, String>(
+                        series: <CartesianSeries<ChartData, String>>[
+                          BarSeries<ChartData, String>(
                             dataSource: barGraph,
                             xValueMapper: (data, _) => data.x,
                             yValueMapper: (data, _) => data.y,
@@ -1176,9 +1114,8 @@ class AlertsHistoryState extends State<AlertsHistory> {
                               topRight: Radius.circular(10.r),
                             ),
                             dataLabelSettings: const DataLabelSettings(
-                              isVisible: true,
-                              labelAlignment: ChartDataLabelAlignment.outer,
-                            ),
+                                isVisible: true,
+                                labelAlignment: ChartDataLabelAlignment.outer),
                           )
                         ],
                       ),
@@ -1187,6 +1124,148 @@ class AlertsHistoryState extends State<AlertsHistory> {
           ],
         ),
       ),
+    );
+  }Widget alertDashboard(double screenHeight) {
+  Widget statCard(String title, String value, Color valueColor) {
+    return Card(
+      elevation: 3.r,
+      child: SizedBox(
+        height: 120.h,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            UiHelper.xsmalltxt_bold(text: title),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SvgPicture.asset('assets/images/clock.svg', width: 25.w),
+                SizedBox(width: 8.w),
+                UiHelper.normal_bold(text: value, color: valueColor),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget stationCard() {
+    return Card(
+      elevation: 4.r,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          SizedBox(height:5.h)
+,          UiHelper.smallText_bold(text: "Alerts by Station"),
+          buildStationChart(),
+        ],
+      ),
+    );
+  }
+
+  return Padding(
+    padding: EdgeInsets.symmetric(horizontal: 16.w),
+    child: Column(
+      children: [
+        SizedBox(height: 20.h),
+        SizedBox(
+          height: 60.h,
+          child: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                InkWell(
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                  onTap: () => getAlertsForDashboard(),
+                  child: UiHelper.customHeadings(text: "Alerts Dashboard"),
+                ),
+                SizedBox(width: 10.w),
+                IconButton(
+                  onPressed: () => widget.onGoToSettings(),
+                  icon: Icon(Icons.settings, size: 30.r),
+                ),
+              ],
+            ),
+          ),
+        ),
+        SizedBox(height: 30.h),
+        Row(
+          children: [
+            Expanded(
+              child: statCard(
+                  "Avg Ack Time", getAverageAckDuration(), Appcolors.primary),
+            ),
+            SizedBox(width: 16.w),
+            Expanded(
+              child: statCard(
+                  "Avg Resp Time", getAverageResponseDuration(), Colors.black),
+            ),
+          ],
+        ),
+        SizedBox(height: 16.h),
+        Row(
+          children: [
+            Expanded(child: stationCard()),
+            SizedBox(width: 16.w),
+            Expanded(child: buildDeviceChart()),
+          ],
+        ),
+      ],
+    ),
+  );
+}
+
+
+
+  Widget alertHistory(double screenHeight) {
+    return Column(
+      children: [  SizedBox(height: 25.h), 
+          Center(child: UiHelper.customHeadings(text: "Alerts History")),
+                SizedBox(height: 45.h),          
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            buildDropdown(selectedValues, "Station", stationList, (newValue) async {
+              setState(() {
+                selectedValues = newValue ?? '';
+                isDataAvilable = false;
+                selectedAssets = selectedDevices = null;
+              });
+              await sendingStationValue(selectedValues!);
+              await getAlertsHistory();
+            }),
+            buildDropdown(selectedAssets, "Assets", assetsList, (newValue) async {
+              setState(() {
+                selectedAssets = newValue ?? '';
+                selectedDevices = null;
+                isDataAvilable = false;
+              });
+              if (selectedAssets != null && selectedAssets!.isNotEmpty) {
+                await sendingStationValue(selectedValues!);
+              }
+              await getAlertsHistory();
+            }),
+            buildDropdown(selectedDevices, "Devices", devicesList, (newValue) async {
+              setState(() {
+                selectedDevices = newValue ?? '';
+                isDataAvilable = false;
+              });
+              if (selectedValues != null) {
+                await getAlertsHistory();
+              }
+            }),
+          ],
+        ),
+        buildSearchSortRow(screenHeight),
+        Expanded(
+          child: SingleChildScrollView(
+            controller: scrollController,
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: buildAlertList(),
+          ),
+        ),
+      ],
     );
   }
 
@@ -1198,346 +1277,83 @@ class AlertsHistoryState extends State<AlertsHistory> {
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         body: visiblesetting
-            ? SettingPage(
-                onChange: (value) => setState(() => visiblesetting = value))
-            : Material(
-                elevation: 10.r,
-                borderRadius: BorderRadius.circular(10.r),
-                child: SnappingSheet(
-                  controller: sheetController,
-                  onSheetMoved: (pos) {
-                    setState(() {
-                      currentSheetFactor = pos.relativeToSnappingPositions;
-                    });
-                  },
-                  lockOverflowDrag: true,
-                  grabbingHeight: 50.h,
-                  grabbing: Container(
-                    decoration: BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                            blurRadius: 30.r,
-                            color: Appcolors.primary.withAlpha(25))
-                      ],
-                      color: const Color(0xFFFEF7FF),
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(30.r),
-                          topRight: Radius.circular(30.r)),
-                    ),
-                    child: Center(
-                      child: Container(
-                        width: 55.w,
-                        height: 5.h,
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade400,
-                          borderRadius: BorderRadius.circular(10.r),
-                        ),
+            ? SettingPage(onChange: (value) => setState(() => visiblesetting = value))
+            : CustomRefreshIndicator(
+                onRefresh: onRefresh,
+                triggerMode: IndicatorTriggerMode.anywhere,
+                durations:
+                    const RefreshIndicatorDurations(completeDuration: Duration(seconds: 1)),
+                onStateChanged: (change) {
+                  if (change.didChange(to: IndicatorState.complete)) {
+                    renderCompleteState = true;
+                  } else if (change.didChange(to: IndicatorState.idle)) {
+                    renderCompleteState = false;
+                  }
+                },
+                builder: (BuildContext context, Widget child, IndicatorController controller) {
+                  final CheckMarkColors style = renderCompleteState
+                      ? (hasError ? checkMarkStyle.error : checkMarkStyle.success)
+                      : checkMarkStyle.loading;
+                  return Stack(
+                    alignment: Alignment.topCenter,
+                    children: [
+                      AnimatedBuilder(
+                        animation: controller,
+                        builder: (context, _) {
+                          return Transform.translate(
+                              offset: Offset(0, controller.value * 50), child: child);
+                        },
+                        child: child,
                       ),
-                    ),
-                  ),
-                  sheetBelow: SnappingSheetContent(
-                    draggable: true,
-                    child: Container(
-                      color: const Color(0xFFFEF7FF),
-                      child: Column(
-                        children: [
-                          UiHelper.customHeadings(
-                            text: "Alerts History",
-                          ),
-                          SizedBox(height: 10.h),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              buildDropdown(
-                                  selectedValues, "Station", stationList,
-                                  (newValue) async {
-                                setState(() {
-                                  selectedValues = newValue ?? '';
-                                  isDataAvilable = false;
-                                  selectedAssets = selectedDevices = null;
-                                });
-                                await sendingStationValue(selectedValues!);
-                                await getAlertsHistory();
-                              }),
-                              buildDropdown(
-                                  selectedAssets, "Assets", assetsList,
-                                  (newValue) async {
-                                setState(() {
-                                  selectedAssets = newValue ?? '';
-                                  selectedDevices = null;
-                                  isDataAvilable = false;
-                                });
-                                if (selectedAssets != null &&
-                                    selectedAssets!.isNotEmpty) {
-                                  await sendingStationValue(selectedValues!);
-                                }
-                                await getAlertsHistory();
-                              }),
-                              buildDropdown(
-                                  selectedDevices, "Devices", devicesList,
-                                  (newValue) async {
-                                setState(() {
-                                  selectedDevices = newValue ?? '';
-                                  isDataAvilable = false;
-                                });
-                                if (selectedValues != null) {
-                                  await getAlertsHistory();
-                                }
-                              }),
-                            ],
-                          ),
-                          buildSearchSortRow(screenHeight),
-                          Expanded(
-                            child: SingleChildScrollView(
-                              controller: scrollController,
-                              physics: const AlwaysScrollableScrollPhysics(),
-                              child: buildAlertList(),
+                      AnimatedBuilder(
+                        animation: controller,
+                        builder: (context, _) {
+                          return Opacity(
+                            opacity: controller.isLoading
+                                ? 1.0
+                                : controller.value.clamp(0.0, 1.0),
+                            child: Container(
+                              height: 80.h,
+                              alignment: Alignment.center,
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 150),
+                                width: 40.w,
+                                height: 40.h,
+                                decoration: BoxDecoration(
+                                    color: style.background, shape: BoxShape.circle),
+                                child: Center(
+                                  child: renderCompleteState
+                                      ? Icon(hasError ? Icons.close : Icons.check,
+                                          color: style.content, size: 24.r)
+                                      : SizedBox(
+                                          height: 24.h,
+                                          width: 24.w,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            color: style.content,
+                                            value: controller.isDragging ||
+                                                    controller.isArmed
+                                                ? controller.value.clamp(0.0, 1.0)
+                                                : null,
+                                          ),
+                                        ),
+                                ),
+                              ),
                             ),
-                          ),
-                        ],
+                          );
+                        },
                       ),
-                    ),
-                  ),
-                  snappingPositions: const [
-                    SnappingPosition.factor(
-                        positionFactor: 0.37,
-                        snappingCurve: Curves.linear,
-                        snappingDuration: Duration(milliseconds: 10)),
-                    SnappingPosition.factor(
-                        positionFactor: 0.85,
-                        snappingCurve: Curves.linear,
-                        snappingDuration: Duration(milliseconds: 10)),
-                  ],
-                  initialSnappingPosition: const SnappingPosition.factor(
-                      positionFactor: 0.37,
-                      snappingCurve: Curves.linear,
-                      snappingDuration: Duration(milliseconds: 200)),
-                  child: CustomRefreshIndicator(
-                    onRefresh: onRefresh,
-                    triggerMode: IndicatorTriggerMode.anywhere,
-                    durations: const RefreshIndicatorDurations(
-                        completeDuration: Duration(seconds: 1)),
-                    onStateChanged: (change) {
-                      if (change.didChange(to: IndicatorState.complete)) {
-                        renderCompleteState = true;
-                      } else if (change.didChange(to: IndicatorState.idle)) {
-                        renderCompleteState = false;
-                      }
-                    },
-                    builder: (BuildContext context, Widget child,
-                        IndicatorController controller) {
-                      final CheckMarkColors style = renderCompleteState
-                          ? (hasError
-                              ? checkMarkStyle.error
-                              : checkMarkStyle.success)
-                          : checkMarkStyle.loading;
-                      return Stack(
-                        alignment: Alignment.topCenter,
-                        children: [
-                          AnimatedBuilder(
-                            animation: controller,
-                            builder: (context, _) {
-                              return Transform.translate(
-                                  offset: Offset(0, controller.value * 100),
-                                  child: child);
-                            },
-                            child: child,
-                          ),
-                          AnimatedBuilder(
-                            animation: controller,
-                            builder: (context, _) {
-                              return Opacity(
-                                opacity: controller.isLoading
-                                    ? 1.0
-                                    : controller.value.clamp(0.0, 1.0),
-                                child: Container(
-                                  height: 80.h,
-                                  alignment: Alignment.center,
-                                  child: AnimatedContainer(
-                                    duration: const Duration(milliseconds: 150),
-                                    width: 40.w,
-                                    height: 40.h,
-                                    decoration: BoxDecoration(
-                                        color: style.background,
-                                        shape: BoxShape.circle),
-                                    child: Center(
-                                      child: renderCompleteState
-                                          ? Icon(
-                                              hasError
-                                                  ? Icons.close
-                                                  : Icons.check,
-                                              color: style.content,
-                                              size: 24.r)
-                                          : SizedBox(
-                                              height: 24.h,
-                                              width: 24.w,
-                                              child: CircularProgressIndicator(
-                                                strokeWidth: 2,
-                                                color: style.content,
-                                                value: controller.isDragging ||
-                                                        controller.isArmed
-                                                    ? controller.value
-                                                        .clamp(0.0, 1.0)
-                                                    : null,
-                                              ),
-                                            ),
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ],
-                      );
-                    },
-                    child: RepaintBoundary(
-                      child: SingleChildScrollView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        child: AnimatedOpacity(
-                          duration: const Duration(milliseconds: 100),
-                          opacity: backgroundOpacity,
-                          child: Column(
-                            children: [
-                              SizedBox(
-                                width: double.infinity,
-                                height: 60.h,
-                                child: Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 10.h),
-                                  child: Center(
-                                    child: Row(
-                                         mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        SizedBox(width: 40.w),
-                                        InkWell(
-                                          splashColor: Colors.transparent,
-                                          highlightColor: Colors.transparent,
-                                          onTap: () => getAlertsForDashboard(),
-                                          child: Center(
-                                            child: UiHelper.customHeadings(
-                                              text: "Alerts Dashboard",
-                                            ),
-                                          ),
-                                        ),    SizedBox(width: 8.w),
-                                        IconButton(
-                                          onPressed: () => widget.onGoToSettings(),
-                                          icon: Icon(Icons.settings, size: 30.r),
-                                        ),
-                                        SizedBox(width: 10.w),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 16.w),
-                                child: SizedBox(
-                                width: double.infinity,
-                                  height: 100.h,
-                                  child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      Card(
-                                        elevation: 2.r,
-                                        child: SizedBox(
-                                          width: 195.w,
-                                          height: 90.h,
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              UiHelper.xsmalltxt_bold(
-                                                  text: "Avg Ack Time"),
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.spaceEvenly,
-                                                children: [
-                                                  SvgPicture.asset(
-                                                      'assets/images/clock.svg',
-                                                      width: 20.w),
-                                                  Padding(
-                                                    padding: EdgeInsets.only(
-                                                        right: 20.w),
-                                                    child: UiHelper.normal_bold(
-                                                      text:
-                                                          getAverageAckDuration(),
-                                                      color: Appcolors.primary,
-                                                    ),
-                                                  )
-                                                ],
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      ),   SizedBox(width: 50.w),
-                                      Card(
-                                        elevation: 4.r,
-                                        child: SizedBox(
-                                          width: 195.w,
-                                          height: 90.h,
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              UiHelper.xsmalltxt_bold(
-                                                  text: "Avg Resp Time"),
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.spaceEvenly,
-                                                children: [
-                                                  SvgPicture.asset(
-                                                      'assets/images/clock.svg',
-                                                      width: 20.w),
-                                                  Padding(
-                                                      padding: EdgeInsets.only(
-                                                          right: 20.w),
-                                                      child: UiHelper.normal_bold(
-                                                          text:
-                                                              getAverageResponseDuration(),
-                                                          color: Colors.black))
-                                                ],
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                 padding: EdgeInsets.symmetric(horizontal: 16.w),
-                                child: SizedBox(
-                                  width: double.infinity,
-                                  height: 270.h,
-                                  child: Row(   
-                                     mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      Card(
-                                        elevation: 4.r,
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceAround,
-                                          children: [
-                                            UiHelper.smallText_bold(
-                                              text: "Alerts by Station",
-                                            ),      
-                                            // SizedBox(width: 50.w),
-                                            buildStationChart(),
-                                          ],
-                                        ),
-                                      ),      SizedBox(width: 50.w),
-                                      buildDeviceChart(),
-                                    ],
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
+                    ],
+                  );
+                },
+                child: RepaintBoundary(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Expanded(child: alertDashboard(screenHeight)),
+                      Container(width: 2.w, color: Colors.grey),
+                      Expanded(child: alertHistory(screenHeight)),
+                    ],
                   ),
                 ),
               ),
@@ -1546,8 +1362,8 @@ class AlertsHistoryState extends State<AlertsHistory> {
   }
 }
 
-class _ChartData {
-  _ChartData(this.x, this.y);
+class ChartData {
+  ChartData(this.x, this.y);
   final String x;
   final double y;
 }

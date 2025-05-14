@@ -22,11 +22,11 @@ class _SettingPageState extends State<SettingPage>
   @override
   void initState() {
     super.initState();
-    loadJsonData();
+    _loadJsonData();
   }
 
-  Future<void> loadJsonData() async {
-    String jsonString = await rootBundle.loadString('assets/instruction.json');
+  Future<void> _loadJsonData() async {
+    final jsonString = await rootBundle.loadString('assets/instruction.json');
     jsonData = jsonDecode(jsonString);
 
     if (jsonData.isNotEmpty) {
@@ -49,61 +49,73 @@ class _SettingPageState extends State<SettingPage>
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onVerticalDragStart: (_) {},
-      onHorizontalDragUpdate: (details) {
-        if (details.primaryDelta! > 0) {
-          _onSwipeBack();
-        }
-      },
+      
+      
+      
+      
       child: Scaffold(
         appBar: AppBar(
+          toolbarHeight: 70.h,
           leading: Padding(
-            padding: EdgeInsets.only(left: 10.w),
+            padding: EdgeInsets.only(left: 10.w, top: 30.h),
             child: IconButton(
-              onPressed: () {
-                widget.onChange(false);
-              },
               icon: Icon(Icons.arrow_back, size: 30.r),
+              onPressed: () => widget.onChange(false),
             ),
           ),
           title: Padding(
-            padding: EdgeInsets.only(left: 350.w),
+            padding: EdgeInsets.only(left: 350.w, top: 30.h),
             child: UiHelper.heading2(
               text: "Settings",
               color: Appcolors.primary,
             ),
           ),
+
+          
           bottom: _tabController != null
-              ? TabBar(
-                  controller: _tabController,
-                  labelColor: Appcolors.primary,
-                  unselectedLabelColor: Colors.grey,
-                  tabs: jsonData.keys.map((title) => Tab(text: title)).toList(),
+              ? PreferredSize(
+                  preferredSize: Size.fromHeight(88.h),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(height: 30.h),      
+                      TabBar(
+                        controller: _tabController,
+                        labelColor: Appcolors.primary,
+                        unselectedLabelColor: Colors.grey,
+                        tabs: jsonData.keys
+                            .map((title) => Tab(text: title))
+                            .toList(),
+                      ),
+                    ],
+                  ),
                 )
               : PreferredSize(
-                  preferredSize: Size.fromHeight(10.h),
-                  child: Container(),
+                  preferredSize: Size.fromHeight(20.h),
+                  child: const SizedBox.shrink(),
                 ),
         ),
-        body: _tabController != null
-            ? TabBarView(
+
+        
+        body: _tabController == null
+            ? const SizedBox.shrink()
+            : TabBarView(
                 controller: _tabController,
                 children: jsonData.keys.map((key) {
-                  Map<String, String> containers =
-                      Map<String, String>.from(jsonData[key]);
+                  final containers =
+                      Map<String, String>.from(jsonData[key] as Map);
 
                   return Padding(
-                    padding: EdgeInsets.only(top: 20.h),
+                    padding: EdgeInsets.only(top: 25.h),
                     child: ListView.builder(
                       itemCount: containers.length,
                       itemBuilder: (context, index) {
-                        String containerTitle =
-                            containers.keys.elementAt(index);
-                        String containerValue = containers[containerTitle]!;
+                        final title = containers.keys.elementAt(index);
+                        final value = containers[title]!;
 
                         return Container(
                           width: 300.w,
-                          height: 110.h,
+                          height: 150.h,
                           margin: EdgeInsets.symmetric(
                               vertical: 10.h, horizontal: 20.w),
                           child: Card(
@@ -119,14 +131,12 @@ class _SettingPageState extends State<SettingPage>
                                 children: [
                                   Center(
                                     child: UiHelper.heading2(
-                                      text: containerTitle,
+                                      text: title,
                                       color: Appcolors.primary,
                                     ),
                                   ),
                                   Center(
-                                    child: UiHelper.normal(
-                                      text: containerValue,
-                                    ),
+                                    child: UiHelper.normal(text: value),
                                   ),
                                 ],
                               ),
@@ -137,8 +147,7 @@ class _SettingPageState extends State<SettingPage>
                     ),
                   );
                 }).toList(),
-              )
-            : Container(),
+              ),
       ),
     );
   }
