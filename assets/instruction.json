@@ -1,0 +1,16 @@
+{
+  "Point Machine": {
+    "Current": "Alarm > 15A",
+    "Voltage": "Alarm < 220V",
+    "Temperature": "Alarm > 50°C"
+  },
+  "Point Vibration": {
+    "Signal Failure": "Alarm if red > 5 mins",
+    "Communication": "Alarm if no signal > 2 mins",
+    "Power Supply": "Alarm < 210V or interruption > 1 min"
+  },
+  "Signal": {
+    "Vibration": "Alarm > 5 mm/s²",
+    "Frequency": "Alarm for unusual patterns"
+  }
+}

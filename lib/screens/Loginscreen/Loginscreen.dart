@@ -1,7 +1,10 @@
+// lib/screens/Loginscreen/Loginscreen.dart
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:motion_toast/motion_toast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rdpms_tablet/Apis/Urls.dart';
 import 'package:rdpms_tablet/Apis/auth.dart';
 import 'package:rdpms_tablet/main.dart';
@@ -17,7 +20,6 @@ class Loginscreen extends StatefulWidget {
 }
 
 class _LoginscreenState extends State<Loginscreen> {
-  
   final TextEditingController userName = TextEditingController();
   final TextEditingController password = TextEditingController();
   final Dio dio = Dio();
@@ -26,27 +28,27 @@ class _LoginscreenState extends State<Loginscreen> {
 
   void login() async {
     if (userName.text.isNotEmpty && password.text.isNotEmpty) {
-      setState(() {
-        isLoading = true;
-      });
+      setState(() => isLoading = true);
 
       Response response = await dio.post(
         loginUrl,
         data: {"email": userName.text, "password": password.text},
       );
 
-      setState(() {
-        isLoading = false;
-      });
+      setState(() => isLoading = false);
 
       if (response.data['status'] == 1) {
+  
+
         List<String> headers =
             response.headers['authorization'] as List<String>;
         auth.jwt = headers[0];
         auth.username = response.data['data']['username'];
+final prefs = await SharedPreferences.getInstance();
+await prefs.setBool('isLoggedIn', true);
 
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => Dashboard()));
+            context, MaterialPageRoute(builder: (_) => const Dashboard()));
         GlobalData().name = response.data['data']['username'].toString();
         GlobalData().department =
             response.data['data']['entitlement'].toString();
@@ -82,11 +84,8 @@ class _LoginscreenState extends State<Loginscreen> {
 
   @override
   Widget build(BuildContext context) {
-    
     return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
-      },
+      onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         resizeToAvoidBottomInset: true,
         backgroundColor: Appcolors.backGroundColor,
@@ -95,9 +94,8 @@ class _LoginscreenState extends State<Loginscreen> {
             SingleChildScrollView(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 40.h),
               child: Center(
-                
                 child: ConstrainedBox(
-                  constraints:  BoxConstraints(maxWidth: 300.w),
+                  constraints: BoxConstraints(maxWidth: 300.w),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -108,7 +106,6 @@ class _LoginscreenState extends State<Loginscreen> {
                         child: UiHelper.customImage(img: "trail_logo.png"),
                       ),
                       SizedBox(height: 20.h),
-                      
                       UiHelper.customTextFeild(
                         hintText: "Username",
                         controller: userName,
@@ -117,7 +114,6 @@ class _LoginscreenState extends State<Loginscreen> {
                         context: context,
                       ),
                       SizedBox(height: 20.h),
-                      
                       UiHelper.customTextFeild(
                         hintText: "Password",
                         controller: password,
@@ -125,9 +121,7 @@ class _LoginscreenState extends State<Loginscreen> {
                         prefixIcon: const Icon(Icons.password_sharp),
                         suffixIcon: GestureDetector(
                           onTap: () {
-                            setState(() {
-                              showPassword = !showPassword;
-                            });
+                            setState(() => showPassword = !showPassword);
                           },
                           child: Icon(
                             showPassword
@@ -139,7 +133,6 @@ class _LoginscreenState extends State<Loginscreen> {
                         context: context,
                       ),
                       SizedBox(height: 20.h),
-                      
                       SizedBox(
                         width: 150.h,
                         height: 55.h,
@@ -165,7 +158,6 @@ class _LoginscreenState extends State<Loginscreen> {
                         ),
                       ),
                       SizedBox(height: 130.h),
-                      
                       Container(
                         margin: EdgeInsets.only(bottom: 30.h),
                         width: 200.w,

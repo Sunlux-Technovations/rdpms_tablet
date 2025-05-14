@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:motion_toast/motion_toast.dart';
-
 import 'package:rdpms_tablet/Apis/Urls.dart';
 import 'package:rdpms_tablet/Apis/dioInstance.dart';
 import 'package:rdpms_tablet/main.dart';
@@ -34,7 +33,6 @@ class _HomepageState extends State<Homepage> {
   Map<String, dynamic> alertsChartCount = {};
   int activeSensors = 0;
   String avgRespTime = "00m 00s";
-
   final checkMarkStyle = CheckMarkStyle(
     loading: const CheckMarkColors(content: Colors.white, background: Colors.blueAccent),
     success: CheckMarkColors(content: Appcolors.primary, background: Colors.greenAccent),
@@ -170,7 +168,6 @@ class _HomepageState extends State<Homepage> {
     final categoryPieData = buildCategoryPieData();
     final hasStatusData = statusPieData.any((d) => d.value > 0);
     final hasCategoryData = categoryPieData.any((d) => d.value > 0);
-
     final signalCounts = getDeviceData('Signal');
     final pointCounts = getDeviceData('Pointmachine');
     final trackCounts = getDeviceData('Track');
@@ -197,7 +194,6 @@ class _HomepageState extends State<Homepage> {
               AnimatedBuilder(
                 animation: controller,
                 builder: (context, _) => Transform.translate(offset: Offset(0, controller.value * 100), child: child),
-                child: child,
               ),
               AnimatedBuilder(
                 animation: controller,
@@ -245,98 +241,51 @@ class _HomepageState extends State<Homepage> {
                   child: UiHelper.customHeadings(text: "Dashboard"),
                 ),
                 SizedBox(height: 16.h),
-   
-Row(
-  crossAxisAlignment: CrossAxisAlignment.start,
-  children: [
-    
-    Expanded(
-      flex: 3,
-      child: Column(
-        children: [
-          SizedBox(height: 70.h),
-          
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(child: firstThreeCard(
-                title: "Total Alerts",
-                value: totalAlertCounts['totalAlerts']?.toString() ?? "0",
-              )),
-              SizedBox(width: 16.w),
-              Expanded(child: firstThreeCard(
-                title: "Active Sensors",
-                value: activeSensors.toString(),
-              )),
-              SizedBox(width: 16.w),
-              Expanded(child: firstThreeCard(
-                title: "Avg Resp Time",
-                value: avgRespTime,
-                valueFontSize: 22.sp,
-                gapBetweenValueAndTitle: 14.h,
-                isTime: true,
-              )),
-            ],
-          ),
-          SizedBox(height: 16.h),
-          
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(child: DeviceCard(
-                title: "Signal",
-                svgAsset: "assets/images/trafficlights.svg",
-                counts: signalCounts,
-              )),
-              SizedBox(width: 16.w),
-              Expanded(child: DeviceCard(
-                title: "PointMachine",
-                svgAsset: "assets/images/sensor (2).svg",
-                counts: pointCounts,
-              )),
-              SizedBox(width: 16.w),
-              Expanded(child: DeviceCard(
-                title: "Track",
-                svgAsset: "assets/images/switch.svg",
-                counts: trackCounts,
-              )),
-            ],
-          ),
-        ],
-      ),
-    ),
-
-    SizedBox(width: 16.w),
-
-    
-    Expanded(
-      flex: 1,
-      child: Column(
-        children: [
-          
-          AspectRatio(
-            aspectRatio: 0.9,
-            child: PieChartCard(
-              title: "Alerts By Status",
-              data: statusPieData,
-              hasData: hasStatusData,
-            ),
-          ),
-          SizedBox(height: 16.h),
-          AspectRatio(
-            aspectRatio: 0.9,
-            child: PieChartCard(
-              title: "Alerts By Category",
-              data: categoryPieData,
-              hasData: hasCategoryData,
-            ),
-          ),
-        ],
-      ),
-    ),
-  ],
-),
-
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      flex: 3,
+                      child: Column(
+                        children: [
+                          SizedBox(height: 70.h),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(child: firstThreeCard(title: "Total Alerts", value: totalAlertCounts['totalAlerts']?.toString() ?? "0")),
+                              SizedBox(width: 16.w),
+                              Expanded(child: firstThreeCard(title: "Active Sensors", value: activeSensors.toString())),
+                              SizedBox(width: 16.w),
+                              Expanded(child: firstThreeCard(title: "Avg Resp Time", value: avgRespTime, valueFontSize: 22.sp, gapBetweenValueAndTitle: 14.h, isTime: true)),
+                            ],
+                          ),
+                          SizedBox(height: 16.h),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(child: DeviceCard(title: "Signal", svgAsset: "assets/images/trafficlights.svg", counts: signalCounts)),
+                              SizedBox(width: 16.w),
+                              Expanded(child: DeviceCard(title: "PointMachine", svgAsset: "assets/images/sensor (2).svg", counts: pointCounts)),
+                              SizedBox(width: 16.w),
+                              Expanded(child: DeviceCard(title: "Track", svgAsset: "assets/images/switch.svg", counts: trackCounts)),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(width: 16.w),
+                    Expanded(
+                      flex: 1,
+                      child: Column(
+                        children: [
+                          AspectRatio(aspectRatio: 1, child: PieChartCard(title: "Alerts By Status", data: statusPieData, hasData: hasStatusData)),
+                          SizedBox(height: 16.h),
+                          AspectRatio(aspectRatio: 1, child: PieChartCard(title: "Alerts By Category", data: categoryPieData, hasData: hasCategoryData)),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
                 SizedBox(height: 16.h),
               ],
             ),
@@ -352,8 +301,8 @@ Row(
     double valueFontSize = 35,
     double gapBetweenValueAndTitle = 0,
     bool isTime = false,
-  }) {
-    return SizedBox(
+  }) =>
+    SizedBox(
       width: 150.w,
       height: 150.h,
       child: Card(
@@ -369,7 +318,6 @@ Row(
         ),
       ),
     );
-  }
 }
 
 class DeviceCard extends StatelessWidget {
@@ -377,53 +325,40 @@ class DeviceCard extends StatelessWidget {
   final String svgAsset;
   final Map? counts;
 
-  const DeviceCard({
-    super.key,
-    required this.title,
-    required this.svgAsset,
-    required this.counts,
-  });
-
-  Widget buildRow(String label, dynamic value) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          UiHelper.xxsmalltxt_bold(text: label),
-          UiHelper.xxsmallnum_bold(number: value?.toString() ?? "0"),
-        ],
-      ),
-    );
-  }
+  const DeviceCard({super.key, required this.title, required this.svgAsset, required this.counts});
 
   @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 4.r,
-       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
-      child: SizedBox(
-        width: 150.w,
-        height: 310.h,
-        
-        child: Column(
-          children: [
-            SizedBox(height: 10.h),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SvgPicture.asset(svgAsset, width: 80.w),
-            ),
-            SizedBox(height: 15.h),
-            UiHelper.smallText_bold(text: title),
-            SizedBox(height: 12.h),
-            buildRow("Active", counts?['alert_status']?['live']),
-            buildRow("Acknowledged", counts?['alert_status']?['acknowledged']),
-            buildRow("Resolved", counts?['alert_status']?['resolved']),
-          ],
-        ),
+  Widget build(BuildContext context) => Card(
+    elevation: 4.r,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+    child: SizedBox(
+      width: 150.w,
+      height: 310.h,
+      child: Column(
+        children: [
+          SizedBox(height: 10.h),
+          Padding(padding: EdgeInsets.all(8.r), child: SvgPicture.asset(svgAsset, width: 80.w)),
+          SizedBox(height: 15.h),
+          UiHelper.smallText_bold(text: title),
+          SizedBox(height: 12.h),
+          buildRow("Active", counts?['alert_status']?['live']),
+          buildRow("Acknowledged", counts?['alert_status']?['acknowledged']),
+          buildRow("Resolved", counts?['alert_status']?['resolved']),
+        ],
       ),
-    );
-  }
+    ),
+  );
+
+  Widget buildRow(String label, dynamic value) => Padding(
+    padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        UiHelper.xxsmalltxt_bold(text: label),
+        UiHelper.xxsmallnum_bold(number: value?.toString() ?? "0"),
+      ],
+    ),
+  );
 }
 
 class PieChartCard extends StatelessWidget {
@@ -431,53 +366,43 @@ class PieChartCard extends StatelessWidget {
   final List<PieChartData> data;
   final bool hasData;
 
-  const PieChartCard({
-    super.key,
-    required this.title,
-    required this.data,
-    required this.hasData,
-  });
+  const PieChartCard({super.key, required this.title, required this.data, required this.hasData});
 
   @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 4.r,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              title,
-              style: TextStyle(fontFamily: "bold", fontSize: 18.sp, fontWeight: FontWeight.w300),
-            ),
-            SizedBox(height: 8.h),
-            SizedBox(   height: 220.h,width: 220.w,
-              child: hasData
-                  ? SfCircularChart(
-                      legend: const Legend(isVisible: true),
-                      series: <CircularSeries>[
-                        PieSeries<PieChartData, String>(
-                          dataSource: data,
-                          xValueMapper: (PieChartData data, _) => data.category,
-                          yValueMapper: (PieChartData data, _) => data.value,
-                          pointColorMapper: (PieChartData data, _) => data.color,
-                          dataLabelSettings: DataLabelSettings(
-                            isVisible: true,
-                            labelPosition: ChartDataLabelPosition.outside,
-                            textStyle: TextStyle(fontSize: 12.sp, color: Appcolors.primary, fontWeight: FontWeight.w600),
-                          ),
-                        )
-                      ],
-                    )
-                  : Center(child: UiHelper.NDF(text: "No alerts available.")),
-            ),
-          ], 
-        ),
+  Widget build(BuildContext context) => Card(
+    elevation: 4.r,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+    child: Padding(
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(title, style: TextStyle(fontFamily: "bold", fontSize: 18.sp, fontWeight: FontWeight.w300)),
+          SizedBox(height: 8.h),
+          Expanded(
+            child: hasData
+                ? SfCircularChart(
+                    legend: const Legend(isVisible: true),
+                    series: <CircularSeries>[
+                      PieSeries<PieChartData, String>(
+                        dataSource: data,
+                        xValueMapper: (d, _) => d.category,
+                        yValueMapper: (d, _) => d.value,
+                        pointColorMapper: (d, _) => d.color,
+                        dataLabelSettings: DataLabelSettings(
+                          isVisible: true,
+                          labelPosition: ChartDataLabelPosition.outside,
+                          textStyle: TextStyle(fontSize: 12.sp, color: Appcolors.primary, fontWeight: FontWeight.w600),
+                        ),
+                      )
+                    ],
+                  )
+                : Center(child: UiHelper.NDF(text: "No alerts available.")),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
 }
 
 class CheckMarkColors {

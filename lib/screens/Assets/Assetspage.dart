@@ -125,7 +125,7 @@ class _AssetspageState extends State<Assetspage> {
       body: Center(
         child: Column(
           children: [
-            SizedBox(height: 40.h),
+            SizedBox(height: 30.h),
             UiHelper.heading2(text: "Assets", color: Appcolors.primary),
             SizedBox(height: 20.h),
             Card(
