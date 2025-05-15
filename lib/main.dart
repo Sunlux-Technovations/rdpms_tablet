@@ -56,7 +56,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-
 class LandscapeLockedWrapper extends StatelessWidget {
   final Widget child;
   const LandscapeLockedWrapper({super.key, required this.child});
