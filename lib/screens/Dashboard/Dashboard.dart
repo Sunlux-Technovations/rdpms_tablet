@@ -678,14 +678,14 @@ GestureDetector(
                                                               fontFamily: "bold", fontSize: 14.sp),
                                                         ),
                                                       position: MotionToastPosition.top, 
-         toastAlignment: Alignment.topCenter,
-        margin: EdgeInsets.only(
-        top: MediaQuery.of(context).padding.top + 12.h,
-        left: 16.w,
-        right: 16.w,
-        ),
-         animationType: AnimationType.slideInFromTop,            
-        animationDuration: const Duration(milliseconds: 600),
+                                                        toastAlignment: Alignment.topCenter,
+                                                        margin: EdgeInsets.only(
+                                                        top: MediaQuery.of(context).padding.top + 12.h,
+                                                        left: 16.w,
+                                                        right: 16.w,
+                                                        ),
+                                                        animationType: AnimationType.slideInFromTop,            
+                                                        animationDuration: const Duration(milliseconds: 600),
                                                       ).show(context);
                                                     }
                                                   },
@@ -754,6 +754,7 @@ GestureDetector(
                                         );
                                       },
                                     ),
+                                    
                             );
                           },
                         ),
