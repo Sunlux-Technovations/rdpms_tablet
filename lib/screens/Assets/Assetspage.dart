@@ -68,14 +68,16 @@ class _AssetspageState extends State<Assetspage> {
     } catch (err) {}
   }
 
-  int getAlertCount(String device) {
-    for (var item in locationAlertData) {
-      if (item is Map && item['device'] == device) {
-        return int.tryParse(item['count'].toString()) ?? 0;
-      }
+int getAlertCount(String targetDevice) {
+  for (final alert in locationAlertData) {
+    final deviceName = alert['device']?.toString().toLowerCase();
+    if (deviceName == targetDevice.toLowerCase()) {
+      return int.tryParse(alert['count'].toString()) ?? 0;
     }
-    return 0;
   }
+  return 0;
+}
+
 
   Widget buildAssetCard({
     required String assetName,

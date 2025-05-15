@@ -117,7 +117,7 @@ class _SettingPageState extends State<SettingPage>
                           width: 300.w,
                           height: 150.h,
                           margin: EdgeInsets.symmetric(
-                              vertical: 10.h, horizontal: 20.w),
+                              vertical: 12.h, horizontal: 20.w),
                           child: Card(
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8.r),

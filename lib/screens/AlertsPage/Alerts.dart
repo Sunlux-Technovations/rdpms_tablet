@@ -907,11 +907,12 @@ class AlertsHistoryState extends State<AlertsHistory> {
           itemCount: itemsToDisplay,
           itemBuilder: (context, index) {
             final alert = filteredData[index];
-            final String alertTime = positive
-                ? (alert['acknowledged_time'] ?? alert['alert_time'] ?? "N/A")
-                : (alert['alert_time'] ?? "N/A");
+           final String alertTime = positive
+    ? (alert['acknowledged_time'] ?? alert['alert_time'] ?? '...')
+    : (alert['alert_time'] ?? '...');
             List<String> dt = parseDateTime(alertTime);
-            final String alertMessage = alert['message'] ?? "";
+           final String alertMessage = alert['message'] ?? '...';
+
             String messageAfter = alertMessage.length > 35
                 ? '${alertMessage.substring(0, 35)}...'
                 : alertMessage;

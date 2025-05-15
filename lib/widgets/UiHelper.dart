@@ -541,7 +541,7 @@ class UiHelper {
       overflow: TextOverflow.ellipsis,
       style: TextStyle(
         color: Colors.black,
-        fontSize: 12.sp,
+        fontSize: 15.sp,
         fontWeight: FontWeight.normal,
         fontFamily: "regular",
       ),

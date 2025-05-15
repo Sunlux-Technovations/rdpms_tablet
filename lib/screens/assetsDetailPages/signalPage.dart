@@ -8,6 +8,10 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:intl/intl.dart';
 import 'package:rdpms_tablet/Apis/Urls.dart';
 import 'package:rdpms_tablet/Apis/dioInstance.dart';
+import 'package:rdpms_tablet/screens/assetsDetailPages/PointmaintenanceAccordians/PointmachinemaintenanceAccordians.dart';
+import 'package:rdpms_tablet/screens/assetsDetailPages/SignalAlertsAccordians/AlertsAccordians.dart';
+import 'package:rdpms_tablet/screens/assetsDetailPages/SignalAnalyticsAccordian/AnalyticsAccordian.dart';
+import 'package:rdpms_tablet/screens/assetsDetailPages/SignalHistoryAccoridans/HistoryAccordians.dart';
 import 'package:rdpms_tablet/screens/constants/socketTopic.dart';
 
 import 'package:rdpms_tablet/widgets/UiHelper.dart';
@@ -1062,7 +1066,15 @@ if (apiMinTimeValue!.isAtSameMomentAs(apiMaxTimeValue!)) {
                         SizedBox(
                           width: 340.w,
                           height: 210.h,
-                          child: Text("alertsAccordian"),
+                          child: Text("alerts")
+                          
+                          // Alertsaccordians(
+                          //     maintenanceList: maintenanceData is List
+                          //         ? maintenanceData
+                          //         : [maintenanceData],
+                          //     onShowAlertsDetails: () =>
+                          //         widget.onNavigateToAlerts(2),
+                          //   ),
                    
                         ),
                       ],
@@ -1156,7 +1168,19 @@ if (apiMinTimeValue!.isAtSameMomentAs(apiMaxTimeValue!)) {
                         SizedBox(
                           width: 340.w,
                           height: 200.h,
-                          child: Text("Maintenanceaccordian"),
+                          child: Text("maintenance")
+                          //  MaintenanceAccordian(
+                          //     maintenanceList: maintenanceData is List
+                          //         ? maintenanceData
+                          //         : (maintenanceData != null
+                          //             ? [maintenanceData]
+                          //             : []),
+                          //     onShowMaintenanceDetails: (detail) {
+                          //       widget.maintenanceKey.currentState
+                          //           ?.setMaintenanceDataFromSignal(detail);
+                          //       widget.onNavigateToMaintenance(2);
+                          //     },
+                          //   ),
                           // MaintenanceAccordian(...)
                         ),
                       ],
@@ -1206,7 +1230,19 @@ if (apiMinTimeValue!.isAtSameMomentAs(apiMaxTimeValue!)) {
                   ? SizedBox(
                       width: 375.w,
                       height: 210.h,
-                      child: Text("analyticsAccordian"),
+                      child:  Container(
+                          decoration: BoxDecoration(
+                            
+                            borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.circular(12.r),
+                              bottomRight: Radius.circular(12.r),
+                            ),
+                          ),
+                          child: AnalyticsAccordian(
+                            analyticsList: [analyticsData],
+                            lazyLoading: loader1,
+                          ),
+                        ),
                       // AnalyticsAccordian(...)
                     )
                   : Container(
@@ -1245,7 +1281,16 @@ if (apiMinTimeValue!.isAtSameMomentAs(apiMaxTimeValue!)) {
                   ? SizedBox(
                       width: 340.w,
                       height: 210.h,
-                      child: Text("History accordian"),
+                      child:Container(
+                          decoration: BoxDecoration(
+                            
+                            borderRadius: BorderRadius.circular(12.r),
+                          ),
+                          child: HistoryAccordians(
+                            maintenanceList: [maintenanceData],
+                            lazyLoading: loader1,
+                          ),
+                        ),
                       // HistoryAccordians(...)
                     )
                   : Center(
