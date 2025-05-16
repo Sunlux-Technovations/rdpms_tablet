@@ -30,12 +30,9 @@ import 'package:rdpms_tablet/main.dart';
 import 'package:rdpms_tablet/screens/Homepage/Homepage.dart';
 import 'package:rdpms_tablet/screens/Loginscreen/Loginscreen.dart';
 import 'package:rdpms_tablet/screens/MaintenancePage/Maintenance.dart';
-import 'package:rdpms_tablet/screens/ProfilePage/Profilepage.dart';
 
 import 'package:rdpms_tablet/widgets/appColors.dart';
 
-
-  
 
 
 bool alertFunction = false;
@@ -152,20 +149,11 @@ bool renderCompleteState = false;
     });
   }
 void socketDataAlerts() {
-
-  if (socket != null) {
-    socket!.disconnect();
-    socket!.dispose();
-  }
-  
-
   socket = IO.io(dashboardpagesocket, {
     'transports': ['websocket'],
     'autoConnect': false,
   });
-  
   socket!.connect();
-
   socket!.onConnect((_) {
     print("Connected...");
     socket!.emit('subscribe', {
@@ -173,18 +161,14 @@ void socketDataAlerts() {
       'username': GlobalData().userName,
     });
   });
-
   socket!.on('update', (data) {
     print("Received data: $data");
     if (!mounted) return;
-
     try {
       var msg = (data is Map<String, dynamic> && data['message'] is String)
           ? jsonDecode(data['message'])
           : data['message'];
-
       var list = msg?['data'] ?? [];
-
       var rowData = <dynamic>[];
       for (var e in list) {
         if (e['key'] == 'alert' && e['row_data'] is Iterable) {
@@ -330,7 +314,21 @@ Future<void> onRefresh() async {
                   child: IndexedStack(index: currentIndex, children: screens),
                 ),
               ],
+            ), 
+       Positioned.fill(
+          child: IgnorePointer(
+         
+            ignoring: !(showNotification || showProfilePanel),
+            child: AnimatedOpacity(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.linear,    
+              opacity:
+                  (showNotification || showProfilePanel) ? 1.0 : 0.0,
+              
+              child: const ColoredBox(color: Colors.black38),
             ),
+          ),
+        ),
             Positioned(
               top: 25.h,
               right: notifIconRight,
@@ -369,6 +367,7 @@ Future<void> onRefresh() async {
             ),
             buildNotificationPanel(panelTop),
             buildProfilePanel(),
+
           ],
         ),
       ),
@@ -679,14 +678,14 @@ GestureDetector(
                                                               fontFamily: "bold", fontSize: 14.sp),
                                                         ),
                                                       position: MotionToastPosition.top, 
-         toastAlignment: Alignment.topCenter,
-        margin: EdgeInsets.only(
-        top: MediaQuery.of(context).padding.top + 12.h,
-        left: 16.w,
-        right: 16.w,
-        ),
-         animationType: AnimationType.slideInFromTop,            
-        animationDuration: const Duration(milliseconds: 600),
+                                                        toastAlignment: Alignment.topCenter,
+                                                        margin: EdgeInsets.only(
+                                                        top: MediaQuery.of(context).padding.top + 12.h,
+                                                        left: 16.w,
+                                                        right: 16.w,
+                                                        ),
+                                                        animationType: AnimationType.slideInFromTop,            
+                                                        animationDuration: const Duration(milliseconds: 600),
                                                       ).show(context);
                                                     }
                                                   },
@@ -755,6 +754,7 @@ GestureDetector(
                                         );
                                       },
                                     ),
+                                    
                             );
                           },
                         ),

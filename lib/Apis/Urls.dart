@@ -32,4 +32,4 @@ final alertDashboard = "$baseUrl/alert/getAlertByStationAssetsCount";
 final totalAlertsByStation = "$baseUrl/alert/getLocationAlertCount";
 final showAckAlert = "$baseUrl/alert/getAckAlerts";
 final assetpagessocket="http://54.148.97.150:3004/sensors";
-final dashboardpagesocket='http://192.109.209.75:3004/alerts';
+final dashboardpagesocket="http://192.109.209.35:3004/alerts";

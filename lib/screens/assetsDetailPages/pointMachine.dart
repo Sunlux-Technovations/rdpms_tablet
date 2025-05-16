@@ -366,8 +366,9 @@ class _PointmachineState extends State<Pointmachine> {
 
   Widget buildPointCard(int index, Map<String, dynamic> groupData) {
     var dataArray = groupData['data'] ?? [];
-    if (dataArray.isEmpty || dataArray[0].keys.isEmpty)
+    if (dataArray.isEmpty || dataArray[0].keys.isEmpty) {
       return const Center(child: Text("Invalid data"));
+    }
     String firstKey = dataArray[0].keys.first;
     var sortedData = dataArray[0][firstKey][0];
     var tagKeys = List<String>.from(groupData['tag_keys'] ?? []);
