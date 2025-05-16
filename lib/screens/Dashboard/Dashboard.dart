@@ -202,28 +202,17 @@ Future<void> onRefresh() async {
   setState(() {
     isLoadingAlerts = true;
   });
-  
   int previousCount = notifyData.length;
-
   try {
-
     if (socket == null || !socket!.connected) {
       socketDataAlerts();
     } else {
-   
       socket!.emit('subscribe', {
         'topic': dashboardalertsTopic,
         'username': GlobalData().userName,
       });
-      
-
-
     }
-
-
     await Future.delayed(const Duration(seconds: 2));
-    
-    
     if (notifyData.length == previousCount) {
       MotionToast.warning(
         width: 300.w,
@@ -245,7 +234,6 @@ Future<void> onRefresh() async {
     }
   } catch (e) {
     print('Error during refresh: $e');
-
     MotionToast.error(
       width: 300.w,
       height: 70.h,
@@ -578,7 +566,7 @@ GestureDetector(
                                 child: AnimatedBuilder(
                                   animation: controller,
                                   builder: (context, _) => Transform.translate(
-                                    offset: Offset(0, controller.value * 40),
+                                    offset: Offset(0, controller.value * 100),
                                     child: child,
                                   ),
                                 ),
@@ -992,10 +980,10 @@ void showAlertDialog(int index) {
                         TextButton(
                             onPressed: () => Navigator.pop(context),
                             child: const Text('No')),
-                        TextButton(
+                            TextButton(
                             onPressed: () async {
                                   final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isLoggedIn', false);
+                                  await prefs.setBool('isLoggedIn', false);
                               Navigator.pushAndRemoveUntil(
                                   context,
                                   MaterialPageRoute(

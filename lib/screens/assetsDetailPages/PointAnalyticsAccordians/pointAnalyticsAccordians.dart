@@ -8,197 +8,117 @@ import 'package:rdpms_tablet/widgets/appColors.dart';
 class Pointanalyticsaccordians extends StatefulWidget {
   final List<dynamic>? analyticsList;
   final bool? lazyLoading;
-  const Pointanalyticsaccordians(
-      {super.key, this.analyticsList, this.lazyLoading});
+  const Pointanalyticsaccordians({
+    super.key,
+    this.analyticsList,
+    this.lazyLoading,
+  });
+
   @override
   PointanalyticsaccordiansState createState() =>
       PointanalyticsaccordiansState();
 }
 
 class PointanalyticsaccordiansState extends State<Pointanalyticsaccordians> {
-  dynamic pointData = [];
-  Widget buildHeader(BuildContext context) {
-    return SizedBox(
-      width: 380.w,
-      height: 45.h,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Padding(
-            padding: EdgeInsets.only(left: 10.w),
-            child: UiHelper.xsmalltxt_bold(
-              text: "Analytics",
-              color: Appcolors.primary,
-            ),
-          ),
-        ],
+  
+  List<dynamic> get rows =>
+      (widget.analyticsList?.isNotEmpty ?? false) ? widget.analyticsList![0] : [];
+
+  Widget header() => Padding(
+        padding: EdgeInsets.only(left: 10.w, bottom: 6.h),
+        child: UiHelper.xsmalltxt_bold(
+          text: 'Analytics',
+          color: Appcolors.primary,
+        ),
+      );
+
+  
+  Widget cell(
+    String txt, {
+    int flex = 1,
+    bool header = false,
+    TextAlign align = TextAlign.center,
+  }) {
+    return Expanded(
+      flex: flex,
+      child: Text(
+        txt,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+        textAlign: align,
+        style: TextStyle(
+          color: Appcolors.primary,
+          fontSize: 12.sp,
+          fontWeight: header ? FontWeight.w700 : FontWeight.w600,
+          fontFamily: header ? 'bold' : 'regular',
+        ),
       ),
     );
   }
 
-  Widget buildTableHeader(BuildContext context) {
-    return SizedBox(
-      width: 390.w,
-      height: 45.h,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          SizedBox(
-            width: 65,
-            height: 45.h,
-            child: Center(
-              child: UiHelper.xsmalltxt_bold(
-                text: "Device",
-                color: Appcolors.primary,
-              ),
-            ),
-          ),
-          SizedBox(
-            width: 65,
-            height: 45.h,
-            child: Center(
-              child: UiHelper.xsmalltxt_bold(
-                text: "Type",
-                color: Appcolors.primary,
-              ),
-            ),
-          ),
-          SizedBox(
-            width: 65,
-            height: 45.h,
-            child: Center(
-              child: UiHelper.xsmalltxt_bold(
-                text: "Average",
-                color: Appcolors.primary,
-              ),
-            ),
-          ),
-          SizedBox(
-            width: 65,
-            height: 45.h,
-            child: Center(
-              child: UiHelper.xsmalltxt_bold(
-                text: "Variance",
-                color: Appcolors.primary,
-              ),
-            ),
-          ),
-          SizedBox(
-            width: 75,
-            height: 45.h,
-            child: Center(
-              child: UiHelper.xsmalltxt_bold(
-                text: "Standard Deviation",
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  Widget tableHeader() => SizedBox(
+        height: 45.h,
+        child: Row(
+          children: [
+            cell('Device', header: true, flex: 1),
+            cell('Type', header: true),
+            cell('Average', header: true),
+            cell('Variance', header: true),
+            cell('Standard Deviation', header: true, flex: 1),
+          ],
+        ),
+      );
 
-  Widget buildTableBody(BuildContext context) {
-    return SizedBox(
-      width: 400.w,
-      height: 155.h,
-      child: ListView.separated(
-        itemCount: pointData[0]?.length ?? 0,
-        separatorBuilder: (context, index) => SizedBox(height: 15.h),
-        itemBuilder: (context, index) {
-          return SizedBox(
-            width: 400.w,
-            height: 33.h,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                SizedBox(
-                  width: 60.w,
-                  height: 45.h,
-                  child: Center(
-                    child: UiHelper.customText(
-                      text: pointData[0][index]['Tag ID'].toString(),
-                      color: Appcolors.primary,
-                      fontsize: 12.sp,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
+  Widget tableBody() => Expanded(
+        child: rows.isEmpty
+            ? Center(
+                child: UiHelper.customText(
+                  text: 'No analytics data available',
+                  color: Colors.grey,
+                  fontsize: 14.sp,
+                  fontWeight: FontWeight.w600,
                 ),
-                SizedBox(
-                  width: 60.w,
-                  height: 45.h,
-                  child: Center(
-                    child: UiHelper.customText(
-                      text: pointData[0][index]['Sensor Type'].toString(),
-                      color: Appcolors.primary,
-                      fontsize: 12.sp,
-                      fontWeight: FontWeight.w700,
+              )
+            : ListView.separated(
+                padding: EdgeInsets.zero,
+                itemCount: rows.length,
+                separatorBuilder: (_, __) => SizedBox(height: 8.h),
+                itemBuilder: (_, i) {
+                  final r = rows[i];
+                  return SizedBox(
+                    height: 33.h,
+                    child: Row(
+                      children: [
+                        cell(r['Tag ID'].toString(), flex: 1),
+                        cell(r['Sensor Type'].toString()),
+                        cell(r['Average Value'].toString()),
+                        cell(r['Variance'].toString()),
+                        cell(r['Standard Deviation'].toString(), flex: 1),
+                      ],
                     ),
-                  ),
-                ),
-                SizedBox(
-                  width: 60.w,
-                  height: 45.h,
-                  child: Center(
-                    child: UiHelper.customText(
-                      text: pointData[0][index]['Average Value'].toString(),
-                      color: Appcolors.primary,
-                      fontsize: 12.sp,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  width: 60.w,
-                  height: 45.h,
-                  child: Center(
-                    child: UiHelper.customText(
-                      text: pointData[0][index]['Variance'].toString(),
-                      color: Appcolors.primary,
-                      fontsize: 12.sp,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  width: 60.w,
-                  height: 45.h,
-                  child: Center(
-                    child: UiHelper.customText(
-                      text:
-                          pointData[0][index]['Standard Deviation'].toString(),
-                      color: Appcolors.primary,
-                      fontsize: 12.sp,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
+                  );
+                },
+              ),
+      );
 
-  Widget buildContent(BuildContext context) {
-    pointData = widget.analyticsList;
-    return Column(
-      children: [
-        buildHeader(context),
-        buildTableHeader(context),
-        buildTableBody(context),
-      ],
-    );
-  }
-
+  
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: widget.lazyLoading == true
-          ? Center(
-              child: LoadingAnimationWidget.stretchedDots(
-                  color: Appcolors.backGroundColor, size: 50.r))
-          : buildContent(context),
+    if (widget.lazyLoading == true) {
+      return Center(
+        child: LoadingAnimationWidget.stretchedDots(
+          color: Appcolors.backGroundColor,
+          size: 50.r,
+        ),
+      );
+    }
+
+    return Column(
+      children: [
+        header(),
+        tableHeader(),
+        tableBody(),
+      ],
     );
   }
 }

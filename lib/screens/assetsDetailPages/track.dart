@@ -403,7 +403,7 @@ int chartSeconds=1;
     final sortedData = dataArray[0][firstKey][0];
     final tagKeys = List<String>.from(groupData['tag_keys'] ?? []);
     final rank1Track = getRank1Track(dataArray, tagKeys);
-   
+   debugPrint('► rank1track: $rank1Track'); 
      return Card(
     elevation: 12.r,
     child: SizedBox(
@@ -746,7 +746,8 @@ if (apiMinTimeValue!.isAtSameMomentAs(apiMaxTimeValue!)) {
               height: collapsedHeight.h,
               decoration: BoxDecoration(
                 color: HexColor("#457b9d"),
-                borderRadius: BorderRadius.circular(10.r),
+                borderRadius: BorderRadius.circular(10.r)
+                ,
               ),
               padding: EdgeInsets.symmetric(horizontal: 10.w),
               child: Row(

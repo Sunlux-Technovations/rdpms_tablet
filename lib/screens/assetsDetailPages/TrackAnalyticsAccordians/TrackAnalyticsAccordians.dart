@@ -8,8 +8,11 @@ import 'package:rdpms_tablet/widgets/appColors.dart';
 class TrackAnalyticsAccordians extends StatefulWidget {
   final List<dynamic>? analyticsList;
   final bool? lazyLoading;
-  const TrackAnalyticsAccordians(
-      {super.key, this.analyticsList, this.lazyLoading});
+  const TrackAnalyticsAccordians({
+    super.key,
+    this.analyticsList,
+    this.lazyLoading,
+  });
 
   @override
   State<TrackAnalyticsAccordians> createState() =>
@@ -17,38 +20,49 @@ class TrackAnalyticsAccordians extends StatefulWidget {
 }
 
 class TrackAnalyticsAccordiansState extends State<TrackAnalyticsAccordians> {
-  List<dynamic> get rows => (widget.analyticsList?.isNotEmpty ?? false)
-      ? widget.analyticsList![0]
-      : [];
+  
+  List<dynamic> get rows =>
+      (widget.analyticsList?.isNotEmpty ?? false) ? widget.analyticsList![0] : [];
 
-  Widget cell(String txt, {bool header = false}) => Expanded(
-        child: Center(
-          child: UiHelper.customText(
-            text: txt,
-            color: Appcolors.primary,
-            fontsize: 12.sp,
-            maxLines: 2,
-            fontWeight: header ? FontWeight.w700 : FontWeight.w600,
-            fontFamily: header ? 'bold' : 'regular',
-          ),
+  
+  Widget cell(
+    String txt, {
+    int flex = 1,
+    bool header = false,
+    TextAlign align = TextAlign.center,
+  }) {
+    return Expanded(
+      flex: flex,
+      child: Text(
+        txt,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+        textAlign: align,
+        style: TextStyle(
+          color: Appcolors.primary,
+          fontSize: 12.sp,
+          fontWeight: header ? FontWeight.w700 : FontWeight.w600,
+          fontFamily: header ? 'bold' : 'regular',
         ),
-      );
+      ),
+    );
+  }
 
+  
   Widget tableHeader() => SizedBox(
-        width: double.infinity,
         height: 50.h,
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            cell('Device', header: true),
+            cell('Device', header: true, flex: 1),
             cell('Type', header: true),
             cell('Average', header: true),
             cell('Variance', header: true),
-            cell('Standard\nDeviation', header: true),
+            cell('Standard\nDeviation', header: true, flex: 1),
           ],
         ),
       );
 
+  
   Widget tableBody() => Expanded(
         child: rows.isEmpty
             ? Center(
@@ -68,13 +82,12 @@ class TrackAnalyticsAccordiansState extends State<TrackAnalyticsAccordians> {
                   return SizedBox(
                     height: 40.h,
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        cell(r['Tag ID'].toString()),
+                        cell(r['Tag ID'].toString(), flex: 1),
                         cell(r['Sensor Type'].toString()),
                         cell(r['Average Value'].toString()),
                         cell(r['Variance'].toString()),
-                        cell(r['Standard Deviation'].toString()),
+                        cell(r['Standard Deviation'].toString(), flex: 1),
                       ],
                     ),
                   );
@@ -82,6 +95,7 @@ class TrackAnalyticsAccordiansState extends State<TrackAnalyticsAccordians> {
               ),
       );
 
+  
   @override
   Widget build(BuildContext context) {
     if (widget.lazyLoading == true) {

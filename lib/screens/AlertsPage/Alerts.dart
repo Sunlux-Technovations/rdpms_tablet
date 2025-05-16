@@ -189,7 +189,7 @@ class AlertsHistoryState extends State<AlertsHistory> {
             : "${hours}H ${minutes}M ${seconds}S";
       }
     }
-    return "00H 00M 00S";
+    return "00h 00m 00s";
   }
 
   String getAverageResponseDuration() {
@@ -198,7 +198,7 @@ class AlertsHistoryState extends State<AlertsHistory> {
       String? duration = avgRespRes[0]["avg_resp_duration"];
       if (duration != null) return formatDuration(duration);
     }
-    return "00H 00M 00S";
+    return "00h 00m 00s";
   }
 
   String getAverageAckDuration() {
@@ -207,7 +207,7 @@ class AlertsHistoryState extends State<AlertsHistory> {
       String? duration = avgAckRes[0]["avg_ack_duration"];
       if (duration != null) return formatDuration(duration);
     }
-    return "00H 00M 00S";
+    return "00h 00m 00s";
   }
 
   Color alertColor(String? alertType) {
@@ -886,7 +886,7 @@ class AlertsHistoryState extends State<AlertsHistory> {
             ? LoadingAnimationWidget.stretchedDots(
                 color: Colors.blue, size: 50.r)
             : Padding(
-              padding: EdgeInsets.only(top: 50.h),
+              padding: EdgeInsets.only(top: 0.h),
               child: Align(
                 alignment: Alignment.center,
                 child: Text("No alerts found.",
@@ -1070,11 +1070,11 @@ class AlertsHistoryState extends State<AlertsHistory> {
     if (alertStationData.isNotEmpty) {
       var devicesListData = alertStationData['alertsbyDevice'] as List;
       var signalData = devicesListData
-          .firstWhere((el) => el['name'] == 'Signal', orElse: () => null);
+          .firstWhere((el) => el['name'] == 'Signal',orElse: () => {'count': '0'},);
       var pointData = devicesListData
-          .firstWhere((el) => el['name'] == 'Pointmachine', orElse: () => null);
+          .firstWhere((el) => el['name'] == 'Pointmachine', orElse: () => {'count': '0'},);
       var trackData = devicesListData
-          .firstWhere((el) => el['name'] == 'Track', orElse: () => null);
+          .firstWhere((el) => el['name'] == 'Track', orElse: () => {'count': '0'},);
       barGraph.add(ChartData('Signal',
           signalData != null ? double.parse(signalData['count']) : 0.0));
       barGraph.add(ChartData(
@@ -1098,27 +1098,30 @@ class AlertsHistoryState extends State<AlertsHistory> {
                     child: UiHelper.NDF(text: "No alerts avliable."))
                   : Padding(
                       padding: EdgeInsets.only(bottom: 8.h),
-                      child: SfCartesianChart(
-                        isTransposed: true,
-                        primaryXAxis: const CategoryAxis(),
-                        primaryYAxis: const NumericAxis(
-                            minimum: 0, maximum: 100, interval: 25),
-                        tooltipBehavior: TooltipBehavior(enable: true),
-                        series: <CartesianSeries<ChartData, String>>[
-                          BarSeries<ChartData, String>(
-                            dataSource: barGraph,
-                            xValueMapper: (data, _) => data.x,
-                            yValueMapper: (data, _) => data.y,
-                            width: 0.3.w,
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(10.r),
-                              topRight: Radius.circular(10.r),
-                            ),
-                            dataLabelSettings: const DataLabelSettings(
-                                isVisible: true,
-                                labelAlignment: ChartDataLabelAlignment.outer),
-                          )
-                        ],
+                      child: AspectRatio(
+                          aspectRatio: 4 / 3,
+                        child: SfCartesianChart(
+                          isTransposed: true,
+                          primaryXAxis: const CategoryAxis(),
+                          primaryYAxis: const NumericAxis(
+                              minimum: 0, maximum: 100, interval: 25),
+                          tooltipBehavior: TooltipBehavior(enable: true),
+                          series: <CartesianSeries<ChartData, String>>[
+                            BarSeries<ChartData, String>(
+                              dataSource: barGraph,
+                              xValueMapper: (data, _) => data.x,
+                              yValueMapper: (data, _) => data.y,
+                              width: 0.3.w,
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(10.r),
+                                topRight: Radius.circular(10.r),
+                              ),
+                              dataLabelSettings: const DataLabelSettings(
+                                  isVisible: true,
+                                  labelAlignment: ChartDataLabelAlignment.outer),
+                            )
+                          ],
+                        ),
                       ),
                     ),
             ),
