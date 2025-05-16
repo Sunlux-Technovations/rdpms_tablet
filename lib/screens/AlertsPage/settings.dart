@@ -49,10 +49,6 @@ class _SettingPageState extends State<SettingPage>
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      
-      
-      
-      
       child: Scaffold(
         appBar: AppBar(
           toolbarHeight: 70.h,
@@ -70,8 +66,6 @@ class _SettingPageState extends State<SettingPage>
               color: Appcolors.primary,
             ),
           ),
-
-          
           bottom: _tabController != null
               ? PreferredSize(
                   preferredSize: Size.fromHeight(88.h),
@@ -95,8 +89,6 @@ class _SettingPageState extends State<SettingPage>
                   child: const SizedBox.shrink(),
                 ),
         ),
-
-        
         body: _tabController == null
             ? const SizedBox.shrink()
             : TabBarView(
@@ -104,7 +96,6 @@ class _SettingPageState extends State<SettingPage>
                 children: jsonData.keys.map((key) {
                   final containers =
                       Map<String, String>.from(jsonData[key] as Map);
-
                   return Padding(
                     padding: EdgeInsets.only(top: 25.h),
                     child: ListView.builder(
@@ -112,7 +103,6 @@ class _SettingPageState extends State<SettingPage>
                       itemBuilder: (context, index) {
                         final title = containers.keys.elementAt(index);
                         final value = containers[title]!;
-
                         return Container(
                           width: 300.w,
                           height: 150.h,

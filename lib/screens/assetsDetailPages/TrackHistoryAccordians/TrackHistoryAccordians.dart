@@ -8,72 +8,89 @@ import 'package:rdpms_tablet/widgets/appColors.dart';
 class TrackHistoryAccordians extends StatefulWidget {
   final List<dynamic>? maintenanceList;
   final bool? lazyLoading;
-  const TrackHistoryAccordians(
-      {super.key, this.maintenanceList, this.lazyLoading});
+  const TrackHistoryAccordians({
+    super.key,
+    this.maintenanceList,
+    this.lazyLoading,
+  });
 
   @override
   State<TrackHistoryAccordians> createState() => TrackHistoryAccordiansState();
 }
 
 class TrackHistoryAccordiansState extends State<TrackHistoryAccordians> {
-  List<dynamic> get history => (widget.maintenanceList?.isNotEmpty ?? false)
-      ? (widget.maintenanceList![0]['history'] ?? [])
-      : [];
+  
+  List<dynamic> get history =>
+      (widget.maintenanceList?.isNotEmpty ?? false)
+          ? (widget.maintenanceList![0]['history'] ?? [])
+          : [];
 
-  Widget cell(String txt, {double? width, bool header = false}) => SizedBox(
-        width: width ?? 70.w,
-        child: Center(
-          child: UiHelper.customText(
-            text: txt,
-            color: Appcolors.primary,
-            fontsize: 12.sp,
-            fontWeight: header ? FontWeight.w700 : FontWeight.w600,
-            fontFamily: header ? 'bold' : 'regular',
-          ),
+  
+  Widget cell(
+    String txt, {
+    int flex = 1,
+    bool header = false,
+    TextAlign align = TextAlign.center,
+  }) {
+    return Expanded(
+      flex: flex,
+      child: Text(
+        txt,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+        textAlign: align,
+        style: TextStyle(
+          color: Appcolors.primary,
+          fontSize: 12.sp,
+          fontWeight: header ? FontWeight.w700 : FontWeight.w600,
+          fontFamily: header ? 'bold' : 'regular',
         ),
-      );
+      ),
+    );
+  }
 
-  Widget dateTimeCell(String raw, {double width = 80}) {
+  
+  Widget dateTimeCell(String raw, {int flex = 2}) {
     final parts = raw.contains('T') ? raw.split('T') : raw.split(' ');
     final date = parts[0];
     final time =
         parts.length > 1 ? parts[1].replaceAll('Z', '').split('.').first : '';
-    return SizedBox(
-      width: width.w,
+    return Expanded(
+      flex: flex,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
           UiHelper.customText(
-              text: date,
-              color: Appcolors.primary,
-              fontsize: 11.sp,
-              fontWeight: FontWeight.w700,
-              fontFamily: 'regular'),
+            text: date,
+            color: Appcolors.primary,
+            fontsize: 11.sp,
+            fontWeight: FontWeight.w700,
+          ),
           UiHelper.customText(
-              text: time,
-              color: Appcolors.primary,
-              fontsize: 11.sp,
-              fontWeight: FontWeight.w700,
-              fontFamily: 'regular'),
+            text: time,
+            color: Appcolors.primary,
+            fontsize: 11.sp,
+            fontWeight: FontWeight.w700,
+          ),
         ],
       ),
     );
   }
 
-  Widget tableHeader() => SizedBox(
-        width: double.infinity,
-        height: 50.h,
+  
+  Widget tableHeader() => Padding(
+        padding: EdgeInsets.symmetric(vertical: 4.h),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            cell('Device', header: true),
+            cell('Device', header: true, flex: 1),
             cell('Control', header: true),
-            cell('Date & Time', width: 90.w, header: true),
+            cell('Date & Time', header: true, flex: 1),
             cell('Value', header: true),
           ],
         ),
       );
 
+  
   Widget tableBody() => Expanded(
         child: history.isEmpty
             ? Center(
@@ -91,14 +108,12 @@ class TrackHistoryAccordiansState extends State<TrackHistoryAccordians> {
                 itemBuilder: (_, i) {
                   final item = history[i];
                   return SizedBox(
-                    height: 48.h,
+                    height: 44.h,
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        cell(item['tagid']),
-                        cell(item['control_type']),
-                        dateTimeCell(item['datetime']),
+                        cell(item['tagid'].toString(), flex: 1),
+                        cell(item['control_type'].toString()),
+                        dateTimeCell(item['datetime'].toString(), flex: 1),
                         cell(item['val'].toString()),
                       ],
                     ),
@@ -107,6 +122,7 @@ class TrackHistoryAccordiansState extends State<TrackHistoryAccordians> {
               ),
       );
 
+  
   @override
   Widget build(BuildContext context) {
     if (widget.lazyLoading == true) {

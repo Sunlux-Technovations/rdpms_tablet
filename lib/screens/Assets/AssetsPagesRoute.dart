@@ -3,17 +3,12 @@ import 'package:rdpms_tablet/screens/Assets/Assetspage.dart';
 import 'package:rdpms_tablet/screens/assetsDetailPages/pointMachine.dart';
 import 'package:rdpms_tablet/screens/assetsDetailPages/signalPage.dart';
 import 'package:rdpms_tablet/screens/assetsDetailPages/track.dart';
-
-
-
-
 class AssetsPageRoutes extends StatefulWidget {
   // final VoidCallback onNavigateToAlerts;
   // final VoidCallback onNavigateToMaintenance;
   // final VoidCallback onNavigateToMaintenanceSignalPage;
 
   // final GlobalKey<MaintenanceRoutesState> maintenanceKey;
-
   const AssetsPageRoutes({
     super.key,
     // required this.onNavigateToAlerts,

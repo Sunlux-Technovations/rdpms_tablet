@@ -8,8 +8,6 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:intl/intl.dart';
 import 'package:rdpms_tablet/Apis/Urls.dart';
 import 'package:rdpms_tablet/Apis/dioInstance.dart';
-import 'package:rdpms_tablet/screens/assetsDetailPages/PointmaintenanceAccordians/PointmachinemaintenanceAccordians.dart';
-import 'package:rdpms_tablet/screens/assetsDetailPages/SignalAlertsAccordians/AlertsAccordians.dart';
 import 'package:rdpms_tablet/screens/assetsDetailPages/SignalAnalyticsAccordian/AnalyticsAccordian.dart';
 import 'package:rdpms_tablet/screens/assetsDetailPages/SignalHistoryAccoridans/HistoryAccordians.dart';
 import 'package:rdpms_tablet/screens/constants/socketTopic.dart';
@@ -221,7 +219,7 @@ class _SignalpageState extends State<Signalpage> {
         }
         groupHeaderKeys =
             List.generate(filterGroupName.length, (_) => GlobalKey());
-
+print("responseData: $responseData");
         if (filterGroupName.isNotEmpty) {
           for (var group in filterGroupName) {
             latestTimeForAPI(group);
@@ -483,7 +481,7 @@ Future<void> getMaintenanceData(
 
   final sortedData = dataArray[0][dataArray[0].keys.first][0];
   final rank1Signals = getRank1Signals(dataArray, List<String>.from(groupData['tag_keys'] ?? []));
-
+debugPrint(' rank1Signals: $rank1Signals'); 
   return Card(
     elevation: 12.r,
     child: SizedBox(

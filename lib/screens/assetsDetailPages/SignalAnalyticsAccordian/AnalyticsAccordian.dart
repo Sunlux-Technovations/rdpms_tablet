@@ -15,18 +15,19 @@ class AnalyticsAccordian extends StatefulWidget {
 }
 
 class AnalyticsAccordianState extends State<AnalyticsAccordian> {
-  List<dynamic> get rows => (widget.analyticsList?.isNotEmpty ?? false)
-      ? widget.analyticsList![0]
-      : [];
+  
+  List<dynamic> get rows =>
+      (widget.analyticsList?.isNotEmpty ?? false) ? widget.analyticsList![0] : [];
 
+  
   Widget cell(
     String txt, {
-    double? width,
+    int flex = 1,
     bool header = false,
     TextAlign align = TextAlign.center,
   }) {
-    return SizedBox(
-      width: width ?? 65.w,
+    return Expanded(
+      flex: flex,
       child: Text(
         txt,
         maxLines: 2,
@@ -42,22 +43,21 @@ class AnalyticsAccordianState extends State<AnalyticsAccordian> {
     );
   }
 
+  
   Widget tableHeader() => SizedBox(
-        width: double.infinity,
         height: 45.h,
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            cell('Device', header: true),
+            cell('Device', header: true, flex: 1),
             cell('Type', header: true),
             cell('Average', header: true),
             cell('Variance', header: true),
-            cell('Standard\nDeviation',
-                width: 75.w, header: true, align: TextAlign.center),
+            cell('Standard\nDeviation', header: true, flex: 1),
           ],
         ),
       );
 
+  
   Widget tableBody() => Expanded(
         child: rows.isEmpty
             ? Center(
@@ -77,13 +77,12 @@ class AnalyticsAccordianState extends State<AnalyticsAccordian> {
                   return SizedBox(
                     height: 33.h,
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        cell(r['Tag ID'].toString()),
+                        cell(r['Tag ID'].toString(), flex: 1),
                         cell(r['Sensor Type'].toString()),
                         cell(r['Average Value'].toString()),
                         cell(r['Variance'].toString()),
-                        cell(r['Standard Deviation'].toString()),
+                        cell(r['Standard Deviation'].toString(), flex: 1),
                       ],
                     ),
                   );
@@ -91,6 +90,7 @@ class AnalyticsAccordianState extends State<AnalyticsAccordian> {
               ),
       );
 
+  
   @override
   Widget build(BuildContext context) {
     if (widget.lazyLoading == true) {

@@ -384,21 +384,50 @@ class _PointmachineState extends State<Pointmachine> {
         });
       }
     }
-    return Card(
-      elevation: 12.r,
-      child: SizedBox(
-        width: double.infinity,
-        height: 190.h,
-        child: Column(
+return Card(
+    elevation: 12.r,
+    child: SizedBox(
+      height: 500.h,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 10.w),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            buildHeader(sortedData, groupData['groupname'], index),
-            buildInfoRow(sortedData),
-            buildGraph(groupData),
-            buildAccordions(rank1Point),
+            Expanded(
+              flex: 6,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 20.h),
+                  buildHeader(sortedData, groupData['groupname'], index),
+                  SizedBox(height: 30.h),
+                  buildGraph(groupData),
+                ],
+              ),
+            ),
+
+            SizedBox(width: 10.w),
+
+            Expanded(
+              flex: 4,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 30.h),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      child: buildAccordions(rank1Point),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
-    );
+    ),
+  );
   }
 
   Widget buildHeader(dynamic sortedData, dynamic groupName, int index) {

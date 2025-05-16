@@ -20,29 +20,43 @@ class HistoryAccordians extends StatefulWidget {
 }
 
 class HistoryAccordiansState extends State<HistoryAccordians> {
+  // -------- helpers --------
   List<dynamic> get history => (widget.maintenanceList?.isNotEmpty ?? false)
       ? (widget.maintenanceList![0]['history'] ?? [])
       : [];
 
-  Widget tableCell(String txt, {double? width, bool header = false}) {
-    return SizedBox(
-      width: width ?? 70.w,
-      child: Center(
-        child: header
-            ? UiHelper.xsmalltxt_bold(text: txt)
-            : UiHelper.xsmalltxt(text: txt),
+  /// flexible text cell
+  Widget cell(
+    String txt, {
+    int flex = 1,
+    bool header = false,
+    TextAlign align = TextAlign.center,
+  }) {
+    return Expanded(
+      flex: flex,
+      child: Text(
+        txt,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+        textAlign: align,
+        style: TextStyle(
+          color: Appcolors.primary,
+          fontSize: 12.sp,
+          fontWeight: header ? FontWeight.w700 : FontWeight.w600,
+          fontFamily: header ? 'bold' : 'regular',
+        ),
       ),
     );
   }
 
-  Widget dateTimeCell(String raw, {double width = 80}) {
+  /// date + time stacked in one column
+  Widget dateTimeCell(String raw, {int flex = 2}) {
     final parts = raw.contains('T') ? raw.split('T') : raw.split(' ');
     final date = parts[0];
     final time =
         parts.length > 1 ? parts[1].replaceAll('Z', '').split('.').first : '';
-
-    return SizedBox(
-      width: width.w,
+    return Expanded(
+      flex: flex,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -63,6 +77,7 @@ class HistoryAccordiansState extends State<HistoryAccordians> {
     );
   }
 
+  // -------- build --------
   @override
   Widget build(BuildContext context) {
     if (widget.lazyLoading == true) {
@@ -77,15 +92,13 @@ class HistoryAccordiansState extends State<HistoryAccordians> {
     return Column(
       children: [
         SizedBox(
-          width: double.infinity,
           height: 45.h,
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              tableCell('Device', header: true),
-              tableCell('Control', header: true),
-              tableCell('Date & Time', width: 90.w, header: true),
-              tableCell('Value', header: true),
+              cell('Device', header: true, flex: 1),
+              cell('Control', header: true),
+              cell('Date & Time', header: true, flex: 1),
+              cell('Value', header: true),
             ],
           ),
         ),
@@ -105,15 +118,14 @@ class HistoryAccordiansState extends State<HistoryAccordians> {
                   separatorBuilder: (_, __) => SizedBox(height: 8.h),
                   itemBuilder: (_, i) {
                     final item = history[i];
-                    return Container(
-                   padding: EdgeInsets.symmetric(vertical: 4.h),
+                    return SizedBox(
+                      height: 44.h,
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          tableCell(item['tagid']),
-                          tableCell(item['control_type']),
-                          dateTimeCell(item['datetime']),
-                          tableCell(item['val'].toString()),
+                          cell(item['tagid'], flex: 1),
+                          cell(item['control_type']),
+                          dateTimeCell(item['datetime'], flex: 1),
+                          cell(item['val'].toString()),
                         ],
                       ),
                     );
