@@ -44,7 +44,7 @@ class _MaintenancehistoryState extends State<Maintenancehistory> {
                       Padding(
                         padding: EdgeInsets.only(left: 5.w),
                         child: UiHelper.customHeadings(
-                          text: "Maintenance History",
+                          text: "Maintenance history",
                         ),
                       ),
                     ],

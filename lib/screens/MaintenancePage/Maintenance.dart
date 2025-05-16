@@ -91,7 +91,7 @@ class _MaintenanceState extends State<Maintenance> {
             height: 50.h,
             description: Text(
               "Data not available for the selected station.",
-              style: TextStyle(fontFamily: "bold", fontSize: 14.sp),
+              style: TextStyle(fontFamily: "bold", fontSize: 15.sp),
             ),
             position: MotionToastPosition.top,
           ).show(context);
