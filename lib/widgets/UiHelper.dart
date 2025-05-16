@@ -352,14 +352,18 @@ class UiHelper {
     );
   }
 
-  static Widget subHeading({required String text, required Color color}) {
+  static Widget subHeading({
+    required String text,
+    required Color color,
+    double? fontSize,
+  }) {
     return Text(
       text,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
       style: TextStyle(
         color: color,
-        fontSize: 18.sp,
+        fontSize: fontSize ?? 18.sp, // Use the provided fontSize or default to 18.sp
         fontWeight: FontWeight.normal,
         fontFamily: "regular",
       ),
